@@ -25,9 +25,9 @@ DROP TABLE IF EXISTS `admin_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `admin_login` (
-  `user_name` varchar(30) NOT NULL,
-  `password` varchar(30) NOT NULL,
-  UNIQUE KEY `userName` (`user_name`)
+                               `user_name` varchar(30) NOT NULL,
+                               `password` varchar(30) NOT NULL,
+                               UNIQUE KEY `userName` (`user_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -49,18 +49,18 @@ DROP TABLE IF EXISTS `bookings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `bookings` (
-  `booking_id` int NOT NULL AUTO_INCREMENT,
-  `room_no` int NOT NULL,
-  `chstomer_id` int NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `booking_status` varchar(30) NOT NULL,
-  `price` float NOT NULL,
-  PRIMARY KEY (`booking_id`),
-  KEY `fk_customerID` (`chstomer_id`),
-  KEY `fk_roomNo` (`room_no`),
-  CONSTRAINT `fk_customerID` FOREIGN KEY (`chstomer_id`) REFERENCES `customers` (`customer_id`),
-  CONSTRAINT `fk_roomNo` FOREIGN KEY (`room_no`) REFERENCES `rooms` (`room_no`)
+                            `booking_id` int NOT NULL AUTO_INCREMENT,
+                            `room_no` int NOT NULL,
+                            `customer_id` int NOT NULL,
+                            `start_date` date NOT NULL,
+                            `end_date` date NOT NULL,
+                            `booking_status` varchar(30) NOT NULL,
+                            `price` float NOT NULL,
+                            PRIMARY KEY (`booking_id`),
+                            KEY `fk_customerID` (`customer_id`),
+                            KEY `fk_roomNo` (`room_no`),
+                            CONSTRAINT `fk_customerID` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
+                            CONSTRAINT `fk_roomNo` FOREIGN KEY (`room_no`) REFERENCES `rooms` (`room_no`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -81,17 +81,17 @@ DROP TABLE IF EXISTS `customers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customers` (
-  `customer_id` int NOT NULL AUTO_INCREMENT,
-  `first_name` varchar(30) NOT NULL,
-  `last_name` varchar(30) NOT NULL,
-  `user_name` varchar(30) NOT NULL,
-  `password` varchar(30) NOT NULL,
-  `email` varchar(30) NOT NULL,
-  `address` varchar(100) NOT NULL,
-  `phone` varchar(15) NOT NULL,
-  `emergency_contact` varchar(15) DEFAULT NULL,
-  PRIMARY KEY (`customer_id`),
-  UNIQUE KEY `username` (`user_name`)
+                             `customer_id` int NOT NULL AUTO_INCREMENT,
+                             `first_name` varchar(30) NOT NULL,
+                             `last_name` varchar(30) NOT NULL,
+                             `user_name` varchar(30) NOT NULL,
+                             `password` varchar(30) NOT NULL,
+                             `email` varchar(30) NOT NULL,
+                             `address` varchar(100) NOT NULL,
+                             `phone` varchar(15) NOT NULL,
+                             `emergency_contact` varchar(15) DEFAULT NULL,
+                             PRIMARY KEY (`customer_id`),
+                             UNIQUE KEY `username` (`user_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -112,11 +112,11 @@ DROP TABLE IF EXISTS `room_types`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `room_types` (
-  `room_type` varchar(30) NOT NULL,
-  `capacity` int NOT NULL,
-  `rent` float NOT NULL,
-  `description` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`room_type`)
+                              `room_type` varchar(30) NOT NULL,
+                              `capacity` int NOT NULL,
+                              `rent` float NOT NULL,
+                              `description` varchar(50) DEFAULT NULL,
+                              PRIMARY KEY (`room_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -137,12 +137,12 @@ DROP TABLE IF EXISTS `rooms`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `rooms` (
-  `room_no` int NOT NULL AUTO_INCREMENT,
-  `room_type` varchar(30) NOT NULL,
-  `room_status` varchar(30) DEFAULT 'Available',
-  PRIMARY KEY (`room_no`),
-  KEY `fk_room_type` (`room_type`),
-  CONSTRAINT `fk_room_type` FOREIGN KEY (`room_type`) REFERENCES `room_types` (`room_type`)
+                         `room_no` int NOT NULL AUTO_INCREMENT,
+                         `room_type` varchar(30) NOT NULL,
+                         `room_status` varchar(30) DEFAULT 'Available',
+                         PRIMARY KEY (`room_no`),
+                         KEY `fk_room_type` (`room_type`),
+                         CONSTRAINT `fk_room_type` FOREIGN KEY (`room_type`) REFERENCES `room_types` (`room_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -154,119 +154,6 @@ LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping events for database 'hotel_app'
---
-
---
--- Dumping routines for database 'hotel_app'
---
-/*!50003 DROP PROCEDURE IF EXISTS `sp_admin_login` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_admin_login`(
-	IN uName VARCHAR(30),
-    IN uPass VARCHAR(30),
-    OUT result BOOLEAN
-)
-BEGIN
-	SELECT EXISTS
-    (
-		SELECT userName
-        FROM admin_login
-        WHERE uName = username AND uPass = password
-    ) INTO result;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_customer_login` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_customer_login`(
-	IN uName VARCHAR(30),
-    IN uPass VARCHAR(30),
-    OUT result BOOLEAN
-)
-BEGIN
-	SELECT EXISTS
-    (
-		SELECT userName
-        FROM admin_login
-        WHERE uName = username AND uPass = password
-    ) INTO result;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_get_customer_username` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_customer_username`()
-BEGIN
-	SELECT user_name
-    FROM customers;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `sp_sign_up` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_sign_up`(
-	fName VARCHAR(30),
-    lName VARCHAR(30),
-    uName VARCHAR(30),
-    userPassword VARCHAR(30),
-    userEmail VARCHAR(30),
-    userAddress VARCHAR(100),
-    userPhone VARCHAR(15),
-    userEmergencyContact VARCHAR(15)
-)
-BEGIN
-	INSERT INTO customers(firstName, lastName, username, password, email, address, phone, emergencyContact)
-    VALUES(fName, lName, uName, userPassword, userEmail, userAddress, userPhone, mergencyContact);
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -277,4 +164,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-06-01 15:45:28
+-- Dump completed on 2023-06-01 16:46:09
