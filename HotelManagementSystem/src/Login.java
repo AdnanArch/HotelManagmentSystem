@@ -115,11 +115,12 @@ public class Login extends JFrame implements ActionListener {
 
                 DatabaseConnection db = new DatabaseConnection();
 
-                CallableStatement statement = db.connection.prepareCall("{call sp_admin_login(?, ?, ?)}");
+                CallableStatement statement = db.connection.prepareCall("{call sp_customer_login(?, ?, ?)}");
                 statement.setString(1,userName);
                 statement.setString(2,password);
-                statement.registerOutParameter(3, Types.BOOLEAN);
                 statement.execute();
+                statement.registerOutParameter(3, Types.BOOLEAN);
+
 
                 boolean result = statement.getBoolean(3);
                 System.out.println("Result =" + result);
