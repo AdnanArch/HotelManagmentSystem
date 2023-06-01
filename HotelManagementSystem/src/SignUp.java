@@ -179,9 +179,18 @@ public class SignUp extends JFrame implements ActionListener {
                 if (firstNameText.isEmpty() || lastNameText.isEmpty() || userNameText.isEmpty() || passwordText.isEmpty()
                         || emailText.isEmpty() || phoneText.isEmpty() || addressText.isEmpty()|| emergencyContactText.isEmpty()){
                     JOptionPane.showMessageDialog(this, "Form is Incomplete");
-                    new Login();
-                    dispose();
-                }else System.out.println("First Name" + firstNameText);
+//                    new Login();
+//                    dispose();
+                }else{
+                    Validator validator = new Validator();
+                    if(validator.isName(firstNameText) && validator.isName(lastNameText) && validator.isUserName(userNameText)
+                    && validator.checkPassword(passwordText) && validator.isEmail(emailText) && validator.isAddress(addressText)
+                    && validator.isPhoneNumber(phoneText) && validator.isPhoneNumber(emergencyContactText)) {
+
+                    }else{
+
+                    }
+                }
 
             }catch (Exception e){
                 e.printStackTrace();
