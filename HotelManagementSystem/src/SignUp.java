@@ -1,6 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
 
 public class SignUp extends JFrame implements ActionListener {
     private static RoundedTextField firstName;
@@ -12,7 +14,10 @@ public class SignUp extends JFrame implements ActionListener {
     private static RoundedTextField phone;
     private static RoundedTextField emergencyContact;
     private static RoundedButton signUpButton;
+
+    DatabaseConnection db;
     SignUp(){
+        db = new DatabaseConnection();
         JLabel label1 = new JLabel("Create new Account");
         label1.setBounds(320,50,500,100);
         label1.setForeground(Color.WHITE.brighter());
@@ -183,13 +188,49 @@ public class SignUp extends JFrame implements ActionListener {
 //                    dispose();
                 }else{
                     Validator validator = new Validator();
+                    // level 1 validation
                     if(validator.isName(firstNameText) && validator.isName(lastNameText) && validator.isUserName(userNameText)
                     && validator.checkPassword(passwordText) && validator.isEmail(emailText) && validator.isAddress(addressText)
                     && validator.isPhoneNumber(phoneText) && validator.isPhoneNumber(emergencyContactText)) {
                         System.out.println("Entered info is correct");
+                        // level 2 validation
+                        // check if username is unique or not
+                        boolean unique = true;
+                        CallableStatement statement = db.connection.prepareCall("{CALL sp_get_customer_username}");
+                        ResultSet results = statement.executeQuery();
+                        while(results.next()) {
+                            if(results.getString(1).equals(userNameText)) {
+                                unique = false;
+                            }
+                        }
+                        if(!unique) {
+                            JOptionPane.showMessageDialog(this, "username already used, kindly use an unique username");
+
+                        }else {
+                            statement = db.connection.prepareCall("{CALL sp_sign_up(?, ?, ?, ?, ?, ?, ?, ?)}");
+                            statement.setString(1, firstNameText);
+                            statement.setString(2, lastNameText);
+                            statement.setString(3, userNameText);
+                            statement.setString(4, passwordText);
+                            statement.setString(5, emailText);
+                            statement.setString(6, addressText);
+                            statement.setString(7, phoneText);
+                            statement.setString(8, emergencyContactText);
+                            try{
+                                statement.execute();
+                                JOptionPane.showMessageDialog(this, "Sign Up Successful");
+                                dispose();
+                                new Login();
+
+
+                            }catch (Exception ex) {
+//                            ex.printStackTrace();
+                                System.out.println(ex.getMessage());
+                            }
+                        }
+
                     }else{
                         JOptionPane.showMessageDialog(this, validator.errorString());
-
                     }
                 }
 
