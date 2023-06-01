@@ -12,7 +12,6 @@ public class SignUp extends JFrame implements ActionListener {
     private static RoundedTextField phone;
     private static RoundedTextField emergencyContact;
     private static RoundedButton signUpButton;
-    private static JLabel firstNameValidator;
     SignUp(){
         JLabel label1 = new JLabel("Create new Account");
         label1.setBounds(320,50,500,100);
@@ -31,10 +30,6 @@ public class SignUp extends JFrame implements ActionListener {
         firstName.setForeground(Color.BLACK);
         firstName.setFont(new Font("Arial", Font.PLAIN, 17));
         add(firstName);
-
-
-
-
 
         JLabel usernameLabel = new JLabel("Username");
         usernameLabel.setBounds(250, 280, 120, 30);
@@ -153,6 +148,7 @@ public class SignUp extends JFrame implements ActionListener {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Login login = new Login();
+                dispose();
                 login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             }
         });
@@ -164,16 +160,6 @@ public class SignUp extends JFrame implements ActionListener {
         setBounds(450, 100,1080,820);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
-    }
-
-    // Helper method to validate the text field
-    private void validateTextField() {
-        // Check if the text field is empty
-        if (firstNameValidator.getText().isEmpty()) {
-            firstNameValidator.setText("First name is required.");
-        } else {
-            firstNameValidator.setText("");
-        }
     }
 
     @Override
@@ -193,6 +179,8 @@ public class SignUp extends JFrame implements ActionListener {
                 if (firstNameText.isEmpty() || lastNameText.isEmpty() || userNameText.isEmpty() || passwordText.isEmpty()
                         || emailText.isEmpty() || phoneText.isEmpty() || addressText.isEmpty()|| emergencyContactText.isEmpty()){
                     JOptionPane.showMessageDialog(this, "Form is Incomplete");
+                    new Login();
+                    dispose();
                 }else System.out.println("First Name" + firstNameText);
 
             }catch (Exception e){

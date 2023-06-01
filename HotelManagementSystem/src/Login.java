@@ -83,6 +83,7 @@ public class Login extends JFrame implements ActionListener {
             @Override
             public void mouseClicked(MouseEvent e) {
                 SignUp signUp = new SignUp();
+                dispose();
                 signUp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             }
         });
@@ -109,7 +110,8 @@ public class Login extends JFrame implements ActionListener {
         if(actionEvent.getSource() == loginButton){
             try {
                 String userName = userNameTextField.getText();
-                String password = passwordTextField.getText();
+                char[] passwordChars = passwordTextField.getPassword();
+                String password = new String(passwordChars);
 
                 DatabaseConnection db = new DatabaseConnection();
 
