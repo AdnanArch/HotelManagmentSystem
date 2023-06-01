@@ -13,15 +13,15 @@ public class Main {
 //
 //                System.out.println(rs.getString(2));
 //            }
-            CallableStatement statement = conn.prepareCall("{CALL sp_admin_login(?,?,?)}");
-            statement.setString(1, "admin1");
-            statement.setString(2, "password1");
-            statement.registerOutParameter(3, Types.BOOLEAN);
+//            CallableStatement statement = conn.prepareCall("{CALL sp_admin_login(?,?,?)}");
+//            statement.setString(1, "admin1");
+//            statement.setString(2, "password1");
+//            statement.registerOutParameter(3, Types.BOOLEAN);
+////            var hasResult = statement.execute();
 //            var hasResult = statement.execute();
-            var hasResult = statement.execute();
-            System.out.println(hasResult);
-
-            System.out.println(statement.getBoolean(3));
+//            System.out.println(hasResult);
+//
+//            System.out.println(statement.getBoolean(3));
 //            if(hasResult) {
 //                System.out.println(statement.getBoolean(3));
 ////                ResultSet resultSet = statement.getResultSet();
@@ -31,6 +31,18 @@ public class Main {
 ////                }
 //            }else {
 //                System.out.println("Failed");
+//            }
+
+            CallableStatement statement = conn.prepareCall("{ CALL sp_get_customers()}");
+            ResultSet rs = statement.executeQuery();
+            var metaData = rs.getMetaData();
+            for(int i=1; i<= metaData.getColumnCount(); ++ i) {
+                System.out.println(metaData.getColumnName(i));
+
+            }
+//            while(rs.next()) {
+//                System.out.println(rs.getString(2));
+//
 //            }
 
         }catch(Exception ex){
