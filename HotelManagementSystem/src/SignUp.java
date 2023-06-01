@@ -186,8 +186,9 @@ public class SignUp extends JFrame implements ActionListener {
                     if(validator.isName(firstNameText) && validator.isName(lastNameText) && validator.isUserName(userNameText)
                     && validator.checkPassword(passwordText) && validator.isEmail(emailText) && validator.isAddress(addressText)
                     && validator.isPhoneNumber(phoneText) && validator.isPhoneNumber(emergencyContactText)) {
-
+                        System.out.println("Entered info is correct");
                     }else{
+                        JOptionPane.showMessageDialog(this, validator.errorString());
 
                     }
                 }
