@@ -92,7 +92,7 @@ CREATE TABLE `customers` (
                              `emergency_contact` varchar(15) DEFAULT NULL,
                              PRIMARY KEY (`customer_id`),
                              UNIQUE KEY `username` (`user_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -101,6 +101,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
+INSERT INTO `customers` VALUES (1,'Adnan','Rafique','adnanrafique','Test123#','adnan@gmail.com','Pakpattan','03085038859','03467760117'),(2,'Nouman','Mustafa','noumanmustafa','Test123#','noumanmustafa@gmail.com','Sahiwal','03088470768','03094325018');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -209,7 +210,7 @@ BEGIN
     SELECT EXISTS
                (
                    SELECT user_name
-                   FROM admin_login
+                   FROM customers
                    WHERE uName = user_name AND uPass = password
                ) INTO result;
 END ;;
@@ -277,4 +278,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-06-01 21:38:11
+-- Dump completed on 2023-06-03 10:07:18
