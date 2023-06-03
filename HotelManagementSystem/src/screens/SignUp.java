@@ -1,3 +1,11 @@
+package screens;
+
+import connection.DatabaseConnection;
+import components.RoundedButton;
+import components.RoundedPasswordField;
+import components.RoundedTextField;
+import security.Validator;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -17,6 +25,7 @@ public class SignUp extends JFrame implements ActionListener {
 
     DatabaseConnection db;
     SignUp(){
+        super("Sign Up");
         db = new DatabaseConnection();
         JLabel label1 = new JLabel("Create new Account");
         label1.setBounds(320,50,500,100);
@@ -184,7 +193,7 @@ public class SignUp extends JFrame implements ActionListener {
                 if (firstNameText.isEmpty() || lastNameText.isEmpty() || userNameText.isEmpty() || passwordText.isEmpty()
                         || emailText.isEmpty() || phoneText.isEmpty() || addressText.isEmpty()|| emergencyContactText.isEmpty()){
                     JOptionPane.showMessageDialog(this, "Form is Incomplete");
-//                    new Login();
+//                    new screens.Login();
 //                    dispose();
                 }else{
                     Validator validator = new Validator();

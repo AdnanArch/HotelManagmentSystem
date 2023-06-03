@@ -1,3 +1,10 @@
+package screens;
+
+import connection.DatabaseConnection;
+import components.RoundedButton;
+import components.RoundedPasswordField;
+import components.RoundedTextField;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,16 +19,18 @@ public class Login extends JFrame implements ActionListener {
     private static RoundedTextField userNameTextField;
     private static RoundedPasswordField passwordTextField;
     private static RoundedButton loginButton;
-
+    DatabaseConnection db = new DatabaseConnection();
     Login() {
+        super("Login");
+
         JLabel label1 = new JLabel("Login");
-        label1.setBounds(480,100,200,100);
+        label1.setBounds(480, 100, 200, 100);
         label1.setForeground(Color.WHITE.brighter());
         label1.setFont(new Font("Arial", Font.BOLD, 40));
         add(label1);
 
         JLabel label2 = new JLabel("Sign in to continue");
-        label2.setBounds(460,150,200,100);
+        label2.setBounds(460, 150, 200, 100);
         label2.setForeground(Color.WHITE.brighter());
         label2.setFont(new Font("Arial", Font.BOLD, 16));
         add(label2);
@@ -80,6 +89,7 @@ public class Login extends JFrame implements ActionListener {
             public void mouseExited(MouseEvent e) {
                 signUpLabel.setText("<html><i>Sign Up</i></html>");
             }
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 SignUp signUp = new SignUp();
@@ -100,41 +110,76 @@ public class Login extends JFrame implements ActionListener {
         getContentPane().setBackground(new Color(12, 55, 64));
         setLayout(null);
         setResizable(false);
-        setBounds(450, 100,1080,820);
+        setBounds(450, 100, 1080, 820);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
 
-        if(actionEvent.getSource() == loginButton){
-            try {
-                String userName = userNameTextField.getText();
-                char[] passwordChars = passwordTextField.getPassword();
-                String password = new String(passwordChars);
+        if (actionEvent.getSource() == loginButton) {
+            String userName = userNameTextField.getText();
+            char[] passwordChars = passwordTextField.getPassword();
+            String password = new String(passwordChars);
 
-                DatabaseConnection db = new DatabaseConnection();
-
-                CallableStatement statement = db.connection.prepareCall("{call sp_customer_login(?, ?, ?)}");
-                statement.setString(1,userName);
-                statement.setString(2,password);
-                statement.execute();
-                statement.registerOutParameter(3, Types.BOOLEAN);
-
-
-                boolean result = statement.getBoolean(3);
-                System.out.println("Result =" + result);
-
-                if(result){
-                    JOptionPane.showMessageDialog(null, "Successful Login");
+            boolean isAdmin = checkAdminLogin(userName, password);
+            if (isAdmin) {
+                dispose();
+                new AdminDashBoard();
+            } else {
+                boolean isCustomer = checkCustomerLogin(userName, password);
+                if (isCustomer) {
+                    dispose();
+                    new CustomerDashBoard();
+                } else {
+                    if (userName.isEmpty()) {
+                        showErrorMessage("Enter your username");
+                    } else if (password.isEmpty()) {
+                        showErrorMessage("Enter your password");
+                    } else showErrorMessage("Invalid username or password");
                 }
-                else JOptionPane.showMessageDialog(null, "Invalid");
-            }catch (Exception e){
-                e.printStackTrace();
             }
 
-        }else {
+
+        } else {
             System.exit(111);
         }
+    }
+
+    private void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private boolean checkCustomerLogin(String userName, String password) {
+        boolean result = false;
+        try {
+            CallableStatement statement = db.connection.prepareCall("{call sp_customer_login(?, ?, ?)}");
+            statement.setString(1, userName);
+            statement.setString(2, password);
+            statement.registerOutParameter(3, Types.BOOLEAN);
+
+            statement.execute();
+            result = statement.getBoolean(3);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private boolean checkAdminLogin(String userName, String password) {
+        boolean result = false;
+        try {
+            CallableStatement statement = db.connection.prepareCall("{call sp_admin_login(?, ?, ?)}");
+            statement.setString(1, userName);
+            statement.setString(2, password);
+            statement.registerOutParameter(3, Types.BOOLEAN);
+
+            statement.execute();
+            result = statement.getBoolean(3);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }

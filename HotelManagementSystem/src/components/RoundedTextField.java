@@ -1,13 +1,14 @@
+package components;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
-public class RoundedButton extends JButton {
+public class RoundedTextField extends JTextField {
     private static final int ARC_WIDTH = 15;
     private static final int ARC_HEIGHT = 15;
 
-    public RoundedButton(String text) {
-        super(text);
+    public RoundedTextField() {
         setOpaque(false);
     }
 
@@ -18,7 +19,7 @@ public class RoundedButton extends JButton {
 
         int width = getWidth();
         int height = getHeight();
-        Shape shape = new RoundRectangle2D.Float(0, 0, width, height, ARC_WIDTH, ARC_HEIGHT);
+        Shape shape = new RoundRectangle2D.Float(0, 0, width - 1, height - 1, ARC_WIDTH, ARC_HEIGHT);
 
         g2.setColor(getBackground());
         g2.fill(shape);

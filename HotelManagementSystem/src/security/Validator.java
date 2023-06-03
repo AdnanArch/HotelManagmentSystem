@@ -1,3 +1,5 @@
+package security;
+
 import org.jetbrains.annotations.NotNull;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
