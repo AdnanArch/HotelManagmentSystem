@@ -46,15 +46,14 @@ public class Validator {
     }
 
     public String errorString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Error in provided information. kindly make sure information match the provided criteria\n\n");
-        sb.append("1. First name and last name should only contain letters\n");
-        sb.append("2. Username cannot start from a digit however it can end and have digit in mid\n");
-        sb.append("3. Password : Minimum eight characters, at least one letter, one number and one special character(@$!%*#?&)\n");
-        sb.append("4. Phone number: 03xxxxxxxxx format\n");
-        sb.append("5. Address can contain letters, numbers and # symbol only\n");
-        sb.append("6. Email format : example@example.com\n");
-        return sb.toString();
+        String sb = "Error in provided information. kindly make sure information match the provided criteria\n\n" +
+                "1. First name and last name should only contain letters\n" +
+                "2. Username cannot start from a digit however it can end and have digit in mid\n" +
+                "3. Password : Minimum eight characters, at least one letter, one number and one special character(@$!%*#?&)\n" +
+                "4. Phone number: 03xxxxxxxxx format\n" +
+                "5. Address can contain letters, numbers and # symbol only\n" +
+                "6. Email format : example@example.com\n";
+        return sb;
 
     }
 }

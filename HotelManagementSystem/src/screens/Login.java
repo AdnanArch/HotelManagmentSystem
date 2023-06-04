@@ -107,12 +107,15 @@ public class Login extends JFrame implements ActionListener {
         exitButton.setFocusable(false);
         add(exitButton);
 
-        getContentPane().setBackground(new Color(12, 55, 64));
         setLayout(null);
-        setResizable(false);
-        setBounds(450, 100, 1080, 820);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(1080, 820));
+        getContentPane().setBackground(new Color(12, 55, 64));
+        pack();
+        setLocationRelativeTo(null);
         setVisible(true);
+        setResizable(false);
     }
 
     @Override
@@ -126,7 +129,7 @@ public class Login extends JFrame implements ActionListener {
             boolean isAdmin = checkAdminLogin(userName, password);
             if (isAdmin) {
                 dispose();
-                new AdminDashBoard();
+                new AdminDashboard();
             } else {
                 boolean isCustomer = checkCustomerLogin(userName, password);
                 if (isCustomer) {
