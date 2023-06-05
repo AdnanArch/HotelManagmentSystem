@@ -110,9 +110,8 @@ public class Login extends JFrame implements ActionListener {
         setLayout(null);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(1080, 820));
+        setSize(1080, 820);
         getContentPane().setBackground(new Color(12, 55, 64));
-        pack();
         setLocationRelativeTo(null);
         setVisible(true);
         setResizable(false);

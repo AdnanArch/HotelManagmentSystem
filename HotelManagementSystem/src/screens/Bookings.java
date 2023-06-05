@@ -8,9 +8,11 @@ public class Bookings extends JFrame {
         setLayout(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(800, 600);
-        getContentPane().setBackground(new Color(12, 55, 64));
+        setBounds(400, 170, 1500, 850);
+        getContentPane().setBackground(new Color(91, 143, 134));
         setLocationRelativeTo(null); // Center the frame on the screen
         setVisible(true);
     }
+
+
 }

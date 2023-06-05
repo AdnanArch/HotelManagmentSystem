@@ -172,9 +172,9 @@ public class SignUp extends JFrame implements ActionListener {
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(1080, 820));
-        getContentPane().setBackground(new Color(12, 55, 64));
-        pack();
+        setSize(1080, 820);
         setLocationRelativeTo(null);
+        getContentPane().setBackground(new Color(12, 55, 64));
         setVisible(true);
         setResizable(false);
     }
@@ -196,8 +196,6 @@ public class SignUp extends JFrame implements ActionListener {
                 if (firstNameText.isEmpty() || lastNameText.isEmpty() || userNameText.isEmpty() || passwordText.isEmpty()
                         || emailText.isEmpty() || phoneText.isEmpty() || addressText.isEmpty()|| emergencyContactText.isEmpty()){
                     JOptionPane.showMessageDialog(this, "Form is Incomplete");
-//                    new screens.Login();
-//                    dispose();
                 }else{
                     Validator validator = new Validator();
                     // level 1 validation
