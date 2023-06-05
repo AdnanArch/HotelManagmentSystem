@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 
 public class AdminDashboard extends JFrame implements ActionListener {
     private static RoundedButton roomButton;
@@ -96,6 +97,9 @@ public class AdminDashboard extends JFrame implements ActionListener {
         revenueButton.addActionListener(this);
         revenueButton.setFocusable(false);
         add(revenueButton);
+
+
+        // TODO: make a Panel to Show the Rooms
 
         setLayout(null);
         setResizable(false);
