@@ -3,7 +3,11 @@ package security;
 import org.jetbrains.annotations.NotNull;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/*
+ *   allow space in fname and last name
+ * ` unrestrict address
+ *   add . , in password(include () )
+ * */
 public class Validator {
     public boolean isName(@NotNull String name) {
         for(char c : name.toCharArray()) {
