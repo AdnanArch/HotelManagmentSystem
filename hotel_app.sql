@@ -254,7 +254,7 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_rooms_details`()
 BEGIN
-    SELECT R.room_no, R.room_status, RT.capacity, RT.rent, RT.description
+    SELECT R.room_no, R.room_status, RT.room_type, RT.capacity, RT.rent, RT.description
     FROM rooms AS R JOIN room_types AS RT
                          USING (type_id)
     ORDER BY room_no;
@@ -349,4 +349,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-06-08 21:36:56
+-- Dump completed on 2023-06-08 22:26:14
