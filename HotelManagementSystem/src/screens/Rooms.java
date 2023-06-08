@@ -103,6 +103,7 @@ public class Rooms extends JFrame implements ActionListener {
         mainPanel.add(roomDescriptionLabel);
 
         roomDescriptionTextArea = new JTextArea();
+        roomDescriptionTextArea.setFont(new Font("Arial", Font.PLAIN, 17));
         JScrollPane descriptionScrollPane = new JScrollPane(roomDescriptionTextArea);
         descriptionScrollPane.setBounds(440, 210, 670, 150);
         mainPanel.add(descriptionScrollPane);
@@ -214,29 +215,32 @@ public class Rooms extends JFrame implements ActionListener {
         }
     }
 
-    private void insertRoomData(String roomType, int capacity, double rent, String roomStatus, String roomDescription) {
+    private boolean insertRoomData(String roomType, int capacity, double rent, String roomStatus, String roomDescription) {
+        boolean result = false;
         try {
             // Create an instance of DatabaseConnection to establish the database connection
             DatabaseConnection dbConnection = new connection.DatabaseConnection();
 
             // Create the SQL query
-            String sqlQuery = "INSERT INTO rooms (room_type, room_status) VALUES (?, ?)";
-
+            // String sqlQuery = "INSERT INTO rooms (room_type, room_status) VALUES (?, ?)";
+            CallableStatement statement = dbConnection.connection.prepareCall("{call sp_insert_room_data(?, ?, ?, ?, ?, ?)}");
+            statement.setString(1, roomType);
+            statement.setString(2, roomStatus);
+            statement.setString(3, String.valueOf(rent));
+            statement.setString(4, String.valueOf(capacity));
+            statement.setString(5, roomDescription);
+            statement.registerOutParameter(6, Types.BOOLEAN);
             // Prepare the statement
-            PreparedStatement preparedStatement = dbConnection.connection.prepareStatement(sqlQuery);
-            preparedStatement.setString(1, roomType);
-            preparedStatement.setString(2, roomStatus);
 
             // Execute the statement
-            preparedStatement.executeUpdate();
-
-            // Close the statement and database connection
-            preparedStatement.close();
+            statement.execute();
+            result = statement.getBoolean(6);
             dbConnection.connection.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return result;
     }
 
     public void actionPerformed(ActionEvent actionEvent) {
@@ -247,7 +251,12 @@ public class Rooms extends JFrame implements ActionListener {
             roomStatus = Objects.requireNonNull(roomStatusComboBox.getSelectedItem()).toString();
             roomDescription = roomDescriptionTextArea.getText();
 
-            insertRoomData(roomType, roomCapacity, roomRent, roomStatus, roomDescription);
+            boolean result = insertRoomData(roomType, roomCapacity, roomRent, roomStatus, roomDescription);
+            if (result) {
+                JOptionPane.showMessageDialog(this, "Successfully Room Added");
+            }else {
+                JOptionPane.showMessageDialog(this, "Invalid Information");
+            }
 
             // Refresh the table with updated data
             fetchAndRefreshDataFromDatabase();
