@@ -10,7 +10,7 @@ public class DatabaseConnection {
     public DatabaseConnection(){
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_app?characterEncoding=latin1", "root", "dd79931e");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel_app?characterEncoding=latin1", "root", "admin");
             statement = connection.createStatement();
         }catch (Exception e){
             e.printStackTrace();
