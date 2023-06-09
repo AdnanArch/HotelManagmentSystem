@@ -270,7 +270,7 @@ public class Rooms extends JFrame implements ActionListener {
                 DatabaseConnection dbConnection = new DatabaseConnection();
 
                 // Create the SQL query with a WHERE clause to search for matching rooms
-                String sqlQuery = "SELECT R.room_no, R.room_status, RT.capacity, RT.rent, RT.description " + "FROM rooms AS R JOIN room_types AS RT USING (type_id) " + "WHERE R.room_no LIKE ? OR RT.room_type LIKE ?";
+                String sqlQuery = "SELECT R.room_no, RT.room_type, R.room_status, RT.capacity, RT.rent, RT.description " + "FROM rooms AS R JOIN room_types AS RT USING (type_id) " + "WHERE R.room_no LIKE ? OR RT.room_type LIKE ?";
 
                 // Prepare the statement
                 PreparedStatement preparedStatement = dbConnection.connection.prepareStatement(sqlQuery);
