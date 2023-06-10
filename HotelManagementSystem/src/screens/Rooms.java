@@ -17,21 +17,15 @@ import java.util.Objects;
 // TODO: Baba g code ko kam se kam kr den. Shukria
 
 public class Rooms extends JFrame implements ActionListener {
-    private final DefaultTableModel tableModel;
-    String roomType;
-    String roomStatus;
-    int roomCapacity;
-    double roomRent;
-    String roomDescription;
-    RoundedButton clearButton;
-    RoundedButton searchButton;
-    RoundedButton addButton;
-    JComboBox<String> roomComboBox;
-    JComboBox<Integer> roomCapacityComboBox;
-    JTextField rentTextField;
-    JComboBox<String> roomStatusComboBox;
-    JTextArea roomDescriptionTextArea;
-    JTextField searchField;
+    private static DefaultTableModel tableModel;
+    private static RoundedButton searchButton;
+    private static RoundedButton addButton;
+    private static JComboBox<String> roomComboBox;
+    private static JComboBox<Integer> roomCapacityComboBox;
+    private static JTextField rentTextField;
+    private static JComboBox<String> roomStatusComboBox;
+    private static JTextArea roomDescriptionTextArea;
+    private static JTextField searchField;
 
     public Rooms() {
         super("Room Management");
@@ -91,7 +85,7 @@ public class Rooms extends JFrame implements ActionListener {
         mainPanel.add(roomStatusLabel);
 
         String[] roomStatusOptions = {"Available", "Occupied", "Maintenance"};
-        JComboBox<String> roomStatusComboBox = new JComboBox<>(roomStatusOptions);
+        roomStatusComboBox = new JComboBox<>(roomStatusOptions);
         roomStatusComboBox.setBounds(850, 150, 260, 35);
         roomStatusComboBox.setFont(new Font("Arial", Font.PLAIN, 17));
         mainPanel.add(roomStatusComboBox);
@@ -129,7 +123,7 @@ public class Rooms extends JFrame implements ActionListener {
         searchButton.addActionListener(this);
         mainPanel.add(searchButton);
 
-        clearButton = new RoundedButton("Clear");
+        RoundedButton clearButton = new RoundedButton("Clear");
         clearButton.setBounds(470, 450, 130, 40);
         clearButton.setBackground(new Color(136, 208, 219));
         clearButton.setFont(new Font("Arial", Font.BOLD, 17));
@@ -176,7 +170,7 @@ public class Rooms extends JFrame implements ActionListener {
 
     private void fetchAndRefreshDataFromDatabase() {
         clearTableData(); // Clear the existing table data
-
+        clearTableColumns();
         try {
             // Create an instance of DatabaseConnection to establish the database connection
             DatabaseConnection dbConnection = new DatabaseConnection();
@@ -215,41 +209,15 @@ public class Rooms extends JFrame implements ActionListener {
         }
     }
 
-    private boolean insertRoomData(String roomType, int capacity, double rent, String roomStatus, String roomDescription) {
-        boolean result = false;
-        try {
-            // Create an instance of DatabaseConnection to establish the database connection
-            DatabaseConnection dbConnection = new connection.DatabaseConnection();
 
-            // Create the SQL query
-            // String sqlQuery = "INSERT INTO rooms (room_type, room_status) VALUES (?, ?)";
-            CallableStatement statement = dbConnection.connection.prepareCall("{call sp_insert_room_data(?, ?, ?, ?, ?, ?)}");
-            statement.setString(1, roomType);
-            statement.setString(2, roomStatus);
-            statement.setString(3, String.valueOf(rent));
-            statement.setString(4, String.valueOf(capacity));
-            statement.setString(5, roomDescription);
-            statement.registerOutParameter(6, Types.BOOLEAN);
-            // Prepare the statement
-
-            // Execute the statement
-            statement.execute();
-            result = statement.getBoolean(6);
-            dbConnection.connection.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
 
     public void actionPerformed(ActionEvent actionEvent) {
         if (actionEvent.getSource() == addButton) {
-            roomType = (String) roomComboBox.getSelectedItem();
-            roomCapacity = (int) Objects.requireNonNull(roomCapacityComboBox.getSelectedItem());
-            roomRent = Double.parseDouble(rentTextField.getText());
-            roomStatus = Objects.requireNonNull(roomStatusComboBox.getSelectedItem()).toString();
-            roomDescription = roomDescriptionTextArea.getText();
+            String roomType = (String) roomComboBox.getSelectedItem();
+            int roomCapacity = (int) Objects.requireNonNull(roomCapacityComboBox.getSelectedItem());
+            double roomRent = Double.parseDouble(rentTextField.getText());
+            String roomStatus = Objects.requireNonNull(roomStatusComboBox.getSelectedItem()).toString();
+            String roomDescription = roomDescriptionTextArea.getText();
 
             boolean result = insertRoomData(roomType, roomCapacity, roomRent, roomStatus, roomDescription);
             if (result) {
@@ -324,4 +292,30 @@ public class Rooms extends JFrame implements ActionListener {
         tableModel.setRowCount(0);
     }
 
+    private boolean insertRoomData(String roomType, int capacity, double rent, String roomStatus, String roomDescription) {
+        boolean result = false;
+        try {
+            // Create an instance of DatabaseConnection to establish the database connection
+            DatabaseConnection dbConnection = new connection.DatabaseConnection();
+
+            // Create the SQL query
+            // String sqlQuery = "INSERT INTO rooms (room_type, room_status) VALUES (?, ?)";
+            CallableStatement statement = dbConnection.connection.prepareCall("{call sp_insert_room_data(?, ?, ?, ?, ?, ?)}");
+            statement.setString(1, roomType);
+            statement.setString(2, roomStatus);
+            statement.setString(3, String.valueOf(rent));
+            statement.setString(4, String.valueOf(capacity));
+            statement.setString(5, roomDescription);
+            statement.registerOutParameter(6, Types.BOOLEAN);
+
+            // Execute the statement
+            statement.execute();
+            result = statement.getBoolean(6);
+            dbConnection.connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }
