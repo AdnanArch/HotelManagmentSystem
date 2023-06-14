@@ -8,9 +8,13 @@ import java.util.regex.Pattern;
  * ` unrestrict address
  *   add . , in password(include () )
  * */
+
 public class Validator {
     public boolean isName(@NotNull String name) {
         for(char c : name.toCharArray()) {
+            if(c == ' ') {
+                continue;
+            }
             if(!Character.isAlphabetic(c)){
                 return false;
             }
@@ -31,18 +35,17 @@ public class Validator {
     }
 
     public boolean isEmail(String email) {
-        Pattern p = Pattern.compile("^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-]+)(\\.[a-zA-Z]{2,5}){1,2}$");
-        Matcher matcher = p.matcher(email);
-        return matcher.matches();
+        return Pattern.compile("^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-]+)(\\.[a-zA-Z]{2,5}){1,2}$").matcher(email).matches();
     }
 
     public boolean checkPassword(String password) {
-        return Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$").matcher(password).matches();
+        //return Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$").matcher(password).matches();
+        return Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?!.*--).{8,}$").matcher(password).matches();
     }
 
 
     public boolean isAddress(String addressText) {
-        return Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[ ])[A-Za-z\\d@ #]{4,}$").matcher(addressText).matches();
+        return Pattern.compile("^[^-]*$").matcher(addressText).matches();
     }
 
     public boolean isPhoneNumber(String phoneText) {

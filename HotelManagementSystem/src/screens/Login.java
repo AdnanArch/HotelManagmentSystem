@@ -121,7 +121,7 @@ public class Login extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent actionEvent) {
 
         if (actionEvent.getSource() == loginButton) {
-            String userName = userNameTextField.getText();
+            String userName = userNameTextField.getText().trim();
             char[] passwordChars = passwordTextField.getPassword();
             String password = new String(passwordChars);
 

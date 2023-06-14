@@ -183,15 +183,15 @@ public class SignUp extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent actionEvent) {
         if(actionEvent.getSource() == signUpButton){
             try {
-                String firstNameText = firstName.getText();
-                String lastNameText = lastName.getText();
-                String userNameText = userName.getText();
+                String firstNameText = firstName.getText().trim();
+                String lastNameText = lastName.getText().trim();
+                String userNameText = userName.getText().trim();
                 char[] passwordChars = password.getPassword();
                 String passwordText = new String(passwordChars);
-                String emailText = email.getText();
-                String phoneText = phone.getText();
-                String addressText = address.getText();
-                String emergencyContactText = emergencyContact.getText();
+                String emailText = email.getText().trim();
+                String phoneText = phone.getText().trim();
+                String addressText = address.getText().trim();
+                String emergencyContactText = emergencyContact.getText().trim();
 
                 if (firstNameText.isEmpty() || lastNameText.isEmpty() || userNameText.isEmpty() || passwordText.isEmpty()
                         || emailText.isEmpty() || phoneText.isEmpty() || addressText.isEmpty()|| emergencyContactText.isEmpty()){
