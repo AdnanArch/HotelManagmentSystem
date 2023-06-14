@@ -62,7 +62,7 @@ CREATE TABLE `bookings` (
                             KEY `fk_customer_id` (`customer_id`),
                             CONSTRAINT `fk_customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
                             CONSTRAINT `fk_room_id` FOREIGN KEY (`room_no`) REFERENCES `rooms` (`room_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -71,6 +71,7 @@ CREATE TABLE `bookings` (
 
 LOCK TABLES `bookings` WRITE;
 /*!40000 ALTER TABLE `bookings` DISABLE KEYS */;
+INSERT INTO `bookings` VALUES (1,10,1,'2023-06-10','2023-06-12','2023-06-09 19:00:00','Available',5000),(2,9,1,'2023-06-12','2023-06-12','2023-06-11 19:00:00','Available',700);
 /*!40000 ALTER TABLE `bookings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,7 +94,7 @@ CREATE TABLE `customers` (
                              `emergency_contact` varchar(15) DEFAULT NULL,
                              PRIMARY KEY (`customer_id`),
                              UNIQUE KEY `user_name` (`user_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -102,6 +103,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
+INSERT INTO `customers` VALUES (1,'Adnan','Rafique','adnanrafique','Test123#','adnandd2547@gmail.com','03085038859','Pakpattan 123','03467760117');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -119,7 +121,7 @@ CREATE TABLE `room_types` (
                               `rent` float NOT NULL,
                               `description` varchar(100) DEFAULT NULL,
                               PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -128,7 +130,7 @@ CREATE TABLE `room_types` (
 
 LOCK TABLES `room_types` WRITE;
 /*!40000 ALTER TABLE `room_types` DISABLE KEYS */;
-INSERT INTO `room_types` VALUES (1,'Single',1,1000,'A single occupancy room'),(2,'Double',2,1500,'A double occupancy room'),(3,'Suite',4,2500,'A spacious suite with multiple rooms'),(4,'Family',4,2000,'A room suitable for a family'),(5,'Deluxe',2,1800,'A luxurious room with additional amenities'),(6,'Executive',2,2000,'An executive level room with premium services'),(7,'Penthouse',2,5000,'A luxurious penthouse suite'),(8,'Standard',2,900,'A standard room with basic amenities'),(9,'Economy',1,700,'An economical room with basic facilities');
+INSERT INTO `room_types` VALUES (1,'Single',1,1000,'A single occupancy room'),(2,'Double',2,1500,'A double occupancy room'),(3,'Suite',4,2500,'A spacious suite with multiple rooms'),(4,'Family',4,2000,'A room suitable for a family'),(5,'Deluxe',2,1800,'A luxurious room with additional amenities'),(6,'Executive',2,2000,'An executive level room with premium services'),(7,'Penthouse',2,5000,'A luxurious penthouse suite'),(8,'Standard',2,900,'A standard room with basic amenities'),(9,'Economy',1,700,'An economical room with basic facilities'),(10,'Family',5,5000,'A family room with 5 persons capacity.'),(11,'Penthouse',5,7000,'A penthouse with 5 persons capacity.'),(12,'Deluxe',4,8000,'A deluxe room with 4 persons capaity.');
 /*!40000 ALTER TABLE `room_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -146,7 +148,7 @@ CREATE TABLE `rooms` (
                          PRIMARY KEY (`room_no`),
                          KEY `fk_room_type_id` (`type_id`),
                          CONSTRAINT `fk_room_type_id` FOREIGN KEY (`type_id`) REFERENCES `room_types` (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -155,7 +157,7 @@ CREATE TABLE `rooms` (
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES (1,'Available',1),(2,'Available',2),(3,'Available',3),(4,'Available',4),(5,'Available',5),(6,'Available',6),(7,'Available',7),(8,'Available',8),(9,'Available',9);
+INSERT INTO `rooms` VALUES (1,'Available',1),(2,'Available',2),(3,'Available',3),(4,'Available',4),(5,'Available',5),(6,'Available',6),(7,'Available',7),(8,'Available',8),(9,'Available',9),(10,'Maintenance',10),(11,'Available',11),(12,'Available',12);
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -216,6 +218,29 @@ BEGIN
                    FROM customers
                    WHERE uName = user_name AND uPass = pasword
                ) INTO result;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_booking_details` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_booking_details`()
+BEGIN
+    SELECT c.customer_id, c.first_name, c.last_name, c.phone, r.room_no, rt.room_type, b.booking_status, r.room_status, b.start_date, b.end_date, b.booking_date
+    FROM bookings AS b
+             JOIN customers AS c ON b.customer_id = c.customer_id
+             JOIN rooms AS r ON b.room_no = r.room_no
+             JOIN room_types AS rt ON r.type_id = rt.type_id;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -349,4 +374,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-06-08 22:26:14
+-- Dump completed on 2023-06-14 21:31:02
