@@ -1,9 +1,6 @@
 package components;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-import java.awt.*;
 import java.util.Vector;
 
 public class JTableButtonModel extends AbstractTableModel {

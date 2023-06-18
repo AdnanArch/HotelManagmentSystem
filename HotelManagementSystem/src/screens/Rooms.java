@@ -6,7 +6,6 @@ import components.RoundedButton;
 import connection.DatabaseConnection;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
@@ -28,7 +27,6 @@ public class Rooms extends JFrame implements ActionListener {
     private static JComboBox<String> roomStatusComboBox;
     private static JTextArea roomDescriptionTextArea;
     private static JTextField searchField;
-    private TableCellRenderer tableRenderer;
 
 
     public Rooms() {
@@ -140,6 +138,7 @@ public class Rooms extends JFrame implements ActionListener {
 
         // Create the table with the table model
         JTable table = new JTable(tableModel) {
+
             @Override
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component component = super.prepareRenderer(renderer, row, column);
@@ -165,7 +164,7 @@ public class Rooms extends JFrame implements ActionListener {
         // Fetch data from the database and populate the table
         fetchAndRefreshDataFromDatabase();
 //      TODO : new code
-        tableRenderer = table.getDefaultRenderer(JButton.class);
+        TableCellRenderer tableRenderer = table.getDefaultRenderer(JButton.class);
         table.setDefaultRenderer(JButton.class, new JTableButtonRenderer(tableRenderer));
         setVisible(true);
     }
@@ -203,12 +202,16 @@ public class Rooms extends JFrame implements ActionListener {
 
             // Add rows to the table model
             while (resultSet.next()) {
-                Object[] rowData = new Object[columnCount+2];
+                Object[] rowData = new Object[columnCount + 2];
                 for (int i = 1; i <= columnCount; i++) {
                     rowData[i - 1] = resultSet.getObject(i);
                 }
-                rowData[columnCount] = new JButton("Edit");
-//                rowData[columnCount+1] = new JButton("Delete");
+                JButton editButton = new JButton("Edit");
+                editButton.addActionListener(this);
+                rowData[columnCount] = editButton;
+                JButton deleteButton = new JButton("Delete");
+                deleteButton.addActionListener(this);
+                rowData[columnCount + 1] = deleteButton;
                 tableModel.addRow(rowData);
             }
 
@@ -220,7 +223,6 @@ public class Rooms extends JFrame implements ActionListener {
             e.printStackTrace();
         }
     }
-
 
 
     public void actionPerformed(ActionEvent actionEvent) {
@@ -288,9 +290,7 @@ public class Rooms extends JFrame implements ActionListener {
                 e.printStackTrace();
             }
         }else {
-            clearTableColumns();
             searchField.setText("");
-            tableModel.setRowCount(0);
             fetchAndRefreshDataFromDatabase();
         }
     }
@@ -311,7 +311,6 @@ public class Rooms extends JFrame implements ActionListener {
             DatabaseConnection dbConnection = new connection.DatabaseConnection();
 
             // Create the SQL query
-            // String sqlQuery = "INSERT INTO rooms (room_type, room_status) VALUES (?, ?)";
             CallableStatement statement = dbConnection.connection.prepareCall("{call sp_insert_room_data(?, ?, ?, ?, ?, ?)}");
             statement.setString(1, roomType);
             statement.setString(2, roomStatus);

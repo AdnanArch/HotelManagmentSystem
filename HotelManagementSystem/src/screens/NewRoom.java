@@ -151,7 +151,7 @@ public class NewRoom extends JFrame implements ActionListener {
                 Component component = super.prepareRenderer(renderer, row, column);
                 if (component instanceof JComponent jComponent) {
                     jComponent.setFont(new Font("Arial", Font.PLAIN, 16)); // Set the desired font size
-                    jComponent.setBackground(Color.WHITE.brighter());
+//                    jComponent.setBackground(Color.BLACK.brighter());
                 }
                 return component;
             }
@@ -161,7 +161,7 @@ public class NewRoom extends JFrame implements ActionListener {
 
 
         table2.setRowHeight(25); // Set the desired row height
-//        table2.gettable2Header().setFont(new Font("Arial", Font.BOLD, 17));
+        table2.getTableHeader().setFont(new Font("Arial", Font.BOLD, 17));
         // Set table2 properties
         table2.setFillsViewportHeight(true);
 //        table2.setAutoResizeMode(Jtable2.AUTO_RESIZE_ALL_COLUMNS);
@@ -211,7 +211,7 @@ public class NewRoom extends JFrame implements ActionListener {
 
             // Add rows to the table model
             while (resultSet.next()) {
-                Vector<Object> rowData = new Vector<Object>();
+                Vector<Object> rowData = new Vector<>();
                 for (int i = 1; i <= columnCount; i++) {
 //                    rowData[i - 1] = resultSet.getObject(i);
                     rowData.add(resultSet.getObject(i));
