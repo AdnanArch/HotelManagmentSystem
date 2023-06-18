@@ -121,7 +121,7 @@ CREATE TABLE `room_types` (
                               `rent` float NOT NULL,
                               `description` varchar(100) DEFAULT NULL,
                               PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -130,7 +130,7 @@ CREATE TABLE `room_types` (
 
 LOCK TABLES `room_types` WRITE;
 /*!40000 ALTER TABLE `room_types` DISABLE KEYS */;
-INSERT INTO `room_types` VALUES (1,'Single',1,1000,'A single occupancy room'),(2,'Double',2,1500,'A double occupancy room'),(3,'Suite',4,2500,'A spacious suite with multiple rooms'),(4,'Family',4,2000,'A room suitable for a family'),(5,'Deluxe',2,1800,'A luxurious room with additional amenities'),(6,'Executive',2,2000,'An executive level room with premium services'),(7,'Penthouse',2,5000,'A luxurious penthouse suite'),(8,'Standard',2,900,'A standard room with basic amenities'),(9,'Economy',1,700,'An economical room with basic facilities'),(10,'Family',5,5000,'A family room with 5 persons capacity.'),(11,'Penthouse',5,7000,'A penthouse with 5 persons capacity.'),(12,'Deluxe',4,8000,'A deluxe room with 4 persons capaity.');
+INSERT INTO `room_types` VALUES (1,'Single',1,1000,'A single occupancy room'),(2,'Double',2,1500,'A double occupancy room'),(3,'Suite',4,2500,'A spacious suite with multiple rooms'),(4,'Family',4,2000,'A room suitable for a family'),(5,'Deluxe',2,1800,'A luxurious room with additional amenities'),(6,'Executive',2,2000,'An executive level room with premium services'),(7,'Penthouse',2,5000,'A luxurious penthouse suite'),(8,'Standard',2,900,'A standard room with basic amenities'),(9,'Economy',1,700,'An economical room with basic facilities'),(10,'Family',5,5000,'A family room with 5 persons capacity.'),(11,'Penthouse',5,7000,'A penthouse with 5 persons capacity.'),(12,'Deluxe',4,8000,'A deluxe room with 4 persons capaity.'),(13,'Suite',4,3000,'etc');
 /*!40000 ALTER TABLE `room_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,7 +148,7 @@ CREATE TABLE `rooms` (
                          PRIMARY KEY (`room_no`),
                          KEY `fk_room_type_id` (`type_id`),
                          CONSTRAINT `fk_room_type_id` FOREIGN KEY (`type_id`) REFERENCES `room_types` (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -157,7 +157,7 @@ CREATE TABLE `rooms` (
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES (1,'Available',1),(2,'Available',2),(3,'Available',3),(4,'Available',4),(5,'Available',5),(6,'Available',6),(7,'Available',7),(8,'Available',8),(9,'Available',9),(10,'Maintenance',10),(11,'Available',11),(12,'Available',12);
+INSERT INTO `rooms` VALUES (1,'Available',1),(2,'Available',2),(3,'Available',3),(4,'Available',4),(6,'Available',6),(7,'Available',7),(9,'Available',9),(10,'Maintenance',10),(11,'Available',11),(13,'Available',13);
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -218,6 +218,43 @@ BEGIN
                    FROM customers
                    WHERE uName = user_name AND uPass = pasword
                ) INTO result;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_delete_room` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_delete_room`(IN roomNumber INT, OUT isDeleted BOOLEAN)
+BEGIN
+    DECLARE rowsAffected INT DEFAULT 0;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+        BEGIN
+            ROLLBACK;
+            SET isDeleted = false;
+        END;
+
+    START TRANSACTION;
+
+    DELETE FROM rooms WHERE room_no = roomNumber;
+    SET rowsAffected = ROW_COUNT();
+
+    IF rowsAffected > 0 THEN
+        SET isDeleted = true;
+    ELSE
+        SET isDeleted = false;
+    END IF;
+
+    COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -374,4 +411,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-06-14 21:49:03
+-- Dump completed on 2023-06-18 21:56:37
