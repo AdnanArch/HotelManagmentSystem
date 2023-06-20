@@ -3,11 +3,10 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/Bookings.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/Login.java" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/NewRoom.java" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/RoomDetailsFetcher1.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/Rooms.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/SignUp.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/TestBookings.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/TestRooms.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/hotel_app.sql" dialect="MySQL" />
   </component>
 </project>

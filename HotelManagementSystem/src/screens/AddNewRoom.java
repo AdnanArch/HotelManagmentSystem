@@ -1,17 +1,20 @@
 package screens;
 
 import components.RoundedButton;
+import connection.DatabaseConnection;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.CallableStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Objects;
-
-import static screens.RoomFunctions.insertRoomData;
 
 public class AddNewRoom extends JFrame implements ActionListener {
     private static RoundedButton addButton;
+    private static RoundedButton updateButton;
     private static JComboBox<String> roomComboBox;
     private static JComboBox<Integer> roomCapacityComboBox;
     private static JTextField rentTextField;
@@ -20,11 +23,11 @@ public class AddNewRoom extends JFrame implements ActionListener {
 
     public AddNewRoom() {
         super("New Room");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(400, 170, 1030, 500);
+
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(null);
+//        JPanel mainPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         mainPanel.setBackground(new Color(58, 109, 122));
         add(mainPanel);
 
@@ -94,35 +97,137 @@ public class AddNewRoom extends JFrame implements ActionListener {
         mainPanel.add(descriptionScrollPane);
 
         addButton = new RoundedButton("Add Room");
-        addButton.setBounds(765, 380, 150, 40);
+        addButton.setBounds(760, 380, 150, 40);
         addButton.setBackground(new Color(136, 208, 219));
         addButton.setFont(new Font("Arial", Font.BOLD, 17));
         addButton.setFocusable(false);
         addButton.addActionListener(this);
         mainPanel.add(addButton);
 
+        updateButton = new RoundedButton("Update");
+        updateButton.setBounds(760, 380, 150, 40);
+        updateButton.setBackground(new Color(136, 208, 219));
+        updateButton.setFont(new Font("Arial", Font.BOLD, 17));
+        updateButton.setFocusable(false);
+        updateButton.addActionListener(this);
+        mainPanel.add(updateButton);
+
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        setLocationRelativeTo(null);
+        setSize(1000, 500);
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int centerX = (screenSize.width - getWidth()) / 2;
+        int centerY = (screenSize.height - getHeight()) / 2;
+
+        // Set the location of the frame
+        setLocation(centerX, centerY);
+
         setVisible(true);
     }
 
+    public void setUpdateButtonVisibility(){
+        addButton.setVisible(false);
+    }
+
+    public void setRoomComboBox(String roomType){
+        roomComboBox.setSelectedItem(roomType);
+    }
+
+    public void setRoomCapacityComboBox(int capacity){
+        roomCapacityComboBox.setSelectedItem(capacity);
+    }
+
+    public void setRentTextField(double rent){
+        rentTextField.setText(String.valueOf(rent));
+    }
+
+    public void setRoomStatusComboBox(String status){
+        roomCapacityComboBox.setSelectedItem(status);
+    }
+
+    public void setRoomDescriptionTextArea(String description){
+        roomDescriptionTextArea.setText(description);
+    }
+
+    public static void setAddRoomButtonVisibility(){
+        addButton.setVisible(false);
+    }
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
+
+        String roomType = (String) roomComboBox.getSelectedItem();
+        int roomCapacity = (int) Objects.requireNonNull(roomCapacityComboBox.getSelectedItem());
+        double roomRent = Double.parseDouble(rentTextField.getText());
+        String roomStatus = Objects.requireNonNull(roomStatusComboBox.getSelectedItem()).toString();
+        String roomDescription = roomDescriptionTextArea.getText();
+
         if (actionEvent.getSource() == addButton) {
-            String roomType = (String) roomComboBox.getSelectedItem();
-            int roomCapacity = (int) Objects.requireNonNull(roomCapacityComboBox.getSelectedItem());
-            double roomRent = Double.parseDouble(rentTextField.getText());
-            String roomStatus = Objects.requireNonNull(roomStatusComboBox.getSelectedItem()).toString();
-            String roomDescription = roomDescriptionTextArea.getText();
 
             boolean result = insertRoomData(roomType, roomCapacity, roomRent, roomStatus, roomDescription);
             if (result) {
                 JOptionPane.showMessageDialog(this, "Successfully Room Added");
-            }else {
+                dispose();
+            }else{
                 JOptionPane.showMessageDialog(this, "Invalid Information");
             }
 
             // Refresh the table with updated data
 //            fetchAndRefreshRoomsDataFromDatabase();
+        } else if (actionEvent.getSource() == updateButton) {
+
         }
+    }
+
+    public boolean updateRoom(int roomNo, String roomType, int capacity, double rent, String status, String description) {
+        boolean isUpdated = false;
+        try{
+            DatabaseConnection db = new DatabaseConnection();
+            CallableStatement statement = db.connection.prepareCall("{CALL sp_update_room(?, ?, ?, ?, ?, ?, ?)}");
+
+            statement.setString(1, String.valueOf(roomNo));
+            statement.setString(2, status);
+            statement.setString(3, roomType);
+            statement.setString(4, String.valueOf(capacity));
+            statement.setString(5, String.valueOf(rent));
+            statement.setString(6, description);
+
+            statement.registerOutParameter(7, Types.BOOLEAN);
+            statement.executeQuery();
+            isUpdated = statement.getBoolean(7);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return isUpdated;
+    }
+
+    public boolean insertRoomData(String roomType, int capacity, double rent, String roomStatus, String roomDescription) {
+        boolean result = false;
+        try {
+            // Create an instance of DatabaseConnection to establish the database connection
+            DatabaseConnection dbConnection = new connection.DatabaseConnection();
+
+            // Create the SQL query
+            CallableStatement statement = dbConnection.connection.prepareCall("{call sp_insert_room_data(?, ?, ?, ?, ?, ?)}");
+            statement.setString(1, roomType);
+            statement.setString(2, roomStatus);
+            statement.setString(3, String.valueOf(rent));
+            statement.setString(4, String.valueOf(capacity));
+            statement.setString(5, roomDescription);
+            statement.registerOutParameter(6, Types.BOOLEAN);
+
+            // Execute the statement
+            statement.execute();
+            result = statement.getBoolean(6);
+            dbConnection.connection.close();
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public static void main(String[] args) {

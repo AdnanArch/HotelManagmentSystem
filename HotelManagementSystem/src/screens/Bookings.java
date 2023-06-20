@@ -73,7 +73,7 @@ public class Bookings extends JFrame implements ActionListener {
         setLayout(null);
         setBounds(400, 170, 1500, 850);
         getContentPane().setBackground(new Color(58, 109, 122));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
         setVisible(true);
     }
