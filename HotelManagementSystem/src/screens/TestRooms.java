@@ -1,7 +1,6 @@
 package screens;
 
 
-import components.JTableButtonRenderer;
 import components.RoundedButton;
 import connection.DatabaseConnection;
 
@@ -165,7 +164,7 @@ public class TestRooms extends JFrame implements ActionListener {
         fetchAndRefreshDataFromDatabase();
 //      TODO : new code
         TableCellRenderer tableRenderer = table.getDefaultRenderer(JButton.class);
-        table.setDefaultRenderer(JButton.class, new JTableButtonRenderer(tableRenderer));
+//        table.setDefaultRenderer(JButton.class, new JTableButtonRenderer(tableRenderer));
         setVisible(true);
     }
 

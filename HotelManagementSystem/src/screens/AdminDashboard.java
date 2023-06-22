@@ -116,7 +116,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if (actionEvent.getSource() == roomButton){
-            new Rooms();
+            Rooms.getInstance();
         } else if (actionEvent.getSource() == bookingButton) {
             new Bookings();
         }else {

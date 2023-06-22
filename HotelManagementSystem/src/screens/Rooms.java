@@ -10,17 +10,17 @@ import java.awt.*;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.util.EventObject;
 
 public class Rooms extends JFrame {
+    private static Rooms instance;
     private final JTable table;
     private final DefaultTableModel tableModel;
     private final RoundedTextField searchField;
 
-    private final DatabaseConnection db =new DatabaseConnection();
+    private final DatabaseConnection db = new DatabaseConnection();
+    private int roomNo;
 
-    Rooms() {
+    private Rooms() {
         setTitle("Room Details");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1000, 800);
@@ -52,10 +52,7 @@ public class Rooms extends JFrame {
         JButton addNewRoomButton = new JButton("Add New Room");
         addNewRoomButton.setPreferredSize(new Dimension(160, 30));
         addNewRoomButton.setFont(new Font("Arial", Font.BOLD, 15));
-        addNewRoomButton.addActionListener(e -> {
-            new AddNewRoom();
-            searchRoom("");
-        });
+        addNewRoomButton.addActionListener(e -> new AddNewRoom());
 
         topPanel.add(searchRoomLabel);
         topPanel.add(searchField);
@@ -102,24 +99,39 @@ public class Rooms extends JFrame {
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
 
-
         fetchAndDisplayRoomDetails();
 
         setVisible(true);
+    }
+
+    public static Rooms getInstance() {
+        if (instance == null) {
+            instance = new Rooms();
+        }
+        return instance;
+    }
+
+
+
+
+    private void refreshTableData() {
+        tableModel.fireTableDataChanged();
     }
 
     public void fetchAndDisplayRoomDetails() {
         clearTableData();
         try {
             // Prepare the stored procedure call
-            DatabaseConnection db = new DatabaseConnection();
             String storedProcedure = "{CALL sp_get_rooms_details()}";
             CallableStatement statement = db.connection.prepareCall(storedProcedure);
 
             renderRoomResultSet(statement);
             statement.close();
+
+            // Refresh the table data
+            refreshTableData();
         } catch (SQLException e) {
-            e.printStackTrace();
+            handleSQLException(e);
         }
     }
 
@@ -134,10 +146,12 @@ public class Rooms extends JFrame {
 
             renderRoomResultSet(statement);
 
-
             statement.close();
+
+            // Refresh the table data
+            refreshTableData();
         } catch (SQLException e) {
-            e.printStackTrace();
+            handleSQLException(e);
         }
     }
 
@@ -164,21 +178,16 @@ public class Rooms extends JFrame {
 
                 // Add the row data to the table model
                 tableModel.addRow(new Object[]{roomID, roomType, capacity, rent, status, description, "Edit", "Delete"});
-
             }
             resultSet.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            handleSQLException(e);
         }
-        // Close the resources
-
     }
-
 
     public void clearTableData() {
         tableModel.setRowCount(0);
     }
-
 
     private static class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
@@ -206,83 +215,74 @@ public class Rooms extends JFrame {
             button.addActionListener(e -> {
                 // Retrieve the room number from the table data
                 int selectedRow = table.getSelectedRow();
-                int roomNo = (int) table.getValueAt(selectedRow, 0);
-                String roomType = table.getValueAt(selectedRow, 1).toString();
-                int capacity = (int) table.getValueAt(selectedRow,2);
-                double rent = (double) table.getValueAt(selectedRow,3);
-                String status = table.getValueAt(selectedRow,4).toString();
-                String description = table.getValueAt(selectedRow, 5).toString();
+                if (selectedRow != -1) {
+                    roomNo = (int) table.getValueAt(selectedRow, 0);
+                    String roomType = table.getValueAt(selectedRow, 1).toString();
+                    int capacity = (int) table.getValueAt(selectedRow, 2);
+                    double rent = (double) table.getValueAt(selectedRow, 3);
+                    String status = table.getValueAt(selectedRow, 4).toString();
+                    String description = table.getValueAt(selectedRow, 5).toString();
 
-                // Get the action command of the button
-                String actionCommand = button.getActionCommand();
+                    // Get the action command of the button
+                    String actionCommand = button.getActionCommand();
 
-                // Perform the desired action based on the button clicked
-                if (actionCommand.equals("Edit")) {
-                    AddNewRoom updateExistingRoom = new AddNewRoom();
-                    boolean isUpdated = updateExistingRoom.updateRoom(roomNo, roomType, capacity, rent, status, description);
-                    updateExistingRoom.setRoomComboBox(roomType);
-                    updateExistingRoom.setRoomCapacityComboBox(capacity);
-                    updateExistingRoom.setRentTextField(rent);
-                    updateExistingRoom.setRoomStatusComboBox(status);
-                    updateExistingRoom.setRoomDescriptionTextArea(description);
-                    updateExistingRoom.setUpdateButtonVisibility();
-                    if(isUpdated){
-                        JOptionPane.showMessageDialog(null, "Room Updated Successfully");
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(null, "Error in Updating the room");
-                    }
-
-                } else if (actionCommand.equals("Delete")) {
-                    boolean isDeleted = deleteRoom(String.valueOf(roomNo));
-                    if (isDeleted) {
-                        JOptionPane.showMessageDialog(null, "Room No " + roomNo + " deleted successfully");
-                        fetchAndDisplayRoomDetails();
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Error!");
+                    // Perform the desired action based on the button clicked
+                    if (actionCommand.equals("Edit")) {
+                        System.out.println(roomNo);
+                        AddNewRoom updateExistingRoom = new AddNewRoom();
+                        updateExistingRoom.setRoomNo(roomNo);
+                        updateExistingRoom.setRoomComboBox(roomType);
+                        updateExistingRoom.setRoomCapacityComboBox(capacity);
+                        updateExistingRoom.setRentTextField(rent);
+                        updateExistingRoom.setRoomStatusComboBox(status);
+                        updateExistingRoom.setRoomDescriptionTextArea(description);
+                        updateExistingRoom.setAddRoomButtonVisibility();
+                        updateExistingRoom.setRoomNo(roomNo);
+                    } else if (actionCommand.equals("Delete")) {
+                        int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete the room?", "Confirmation", JOptionPane.YES_NO_OPTION);
+                        if (dialogResult == JOptionPane.YES_OPTION) {
+                            deleteRoom(roomNo, selectedRow);
+                        }
                     }
                 }
             });
         }
 
-
-
-        private boolean deleteRoom(String roomNo) {
-            boolean isDeleted = false;
-            try {
-                DatabaseConnection db = new DatabaseConnection();
-                CallableStatement statement = db.connection.prepareCall("{call sp_delete_room(?, ?)}");
-                statement.setString(1, roomNo);
-                statement.registerOutParameter(2, Types.BOOLEAN);
-
-                statement.execute();
-                isDeleted = statement.getBoolean(2);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return isDeleted;
-        }
-
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            buttonText = value.toString(); // Store the button text
-            button.setText(buttonText); // Set the button text
-            button.setActionCommand(buttonText); // Set the action command
+            buttonText = (value == null) ? "" : value.toString();
+            button.setText(buttonText);
             return button;
         }
 
-        @Override
-        public boolean isCellEditable(EventObject e) {
-            return true; // Enable single-click editing
-        }
-
-        @Override
         public Object getCellEditorValue() {
-            return buttonText; // Return the button text when editing is finished
+            return buttonText;
         }
     }
 
+    public void deleteRoom(int roomNo, int selectedRow) {
+        try {
+            String storedProcedure = "{CALL sp_delete_room_by_no(?)}";
+            CallableStatement statement = db.connection.prepareCall(storedProcedure);
+            statement.setInt(1, roomNo);
+            statement.executeUpdate();
+            statement.close();
+
+            JOptionPane.showMessageDialog(null, "Room deleted successfully.");
+
+            tableModel.removeRow(selectedRow);
+
+            refreshTableData();
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+    }
+
+
+    private void handleSQLException(SQLException e) {
+        JOptionPane.showMessageDialog(null, "An error occurred while accessing the database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(Rooms::new);
+        Rooms.getInstance();
     }
 }

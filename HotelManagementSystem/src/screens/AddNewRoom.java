@@ -20,10 +20,10 @@ public class AddNewRoom extends JFrame implements ActionListener {
     private static JTextField rentTextField;
     private static JComboBox<String> roomStatusComboBox;
     private static JTextArea roomDescriptionTextArea;
+    private int roomNo;
 
     public AddNewRoom() {
         super("New Room");
-
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(null);
@@ -127,33 +127,42 @@ public class AddNewRoom extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    public void setUpdateButtonVisibility(){
+    public static void main(String[] args) {
+        new AddNewRoom();
+    }
+
+    public void setUpdateButtonVisibility() {
         addButton.setVisible(false);
     }
 
-    public void setRoomComboBox(String roomType){
+    public void setRoomComboBox(String roomType) {
         roomComboBox.setSelectedItem(roomType);
     }
 
-    public void setRoomCapacityComboBox(int capacity){
+    public void setRoomCapacityComboBox(int capacity) {
         roomCapacityComboBox.setSelectedItem(capacity);
     }
 
-    public void setRentTextField(double rent){
+    public void setRentTextField(double rent) {
         rentTextField.setText(String.valueOf(rent));
     }
 
-    public void setRoomStatusComboBox(String status){
+    public void setRoomStatusComboBox(String status) {
         roomCapacityComboBox.setSelectedItem(status);
     }
 
-    public void setRoomDescriptionTextArea(String description){
+    public void setRoomDescriptionTextArea(String description) {
         roomDescriptionTextArea.setText(description);
     }
 
-    public static void setAddRoomButtonVisibility(){
+    public void setAddRoomButtonVisibility() {
         addButton.setVisible(false);
     }
+
+    public void setRoomNo(int roomNo) {
+        this.roomNo = roomNo;
+    }
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
 
@@ -169,20 +178,36 @@ public class AddNewRoom extends JFrame implements ActionListener {
             if (result) {
                 JOptionPane.showMessageDialog(this, "Successfully Room Added");
                 dispose();
-            }else{
+            } else {
                 JOptionPane.showMessageDialog(this, "Invalid Information");
             }
-
-            // Refresh the table with updated data
-//            fetchAndRefreshRoomsDataFromDatabase();
+            Rooms testRoom = Rooms.getInstance();
+            testRoom.fetchAndDisplayRoomDetails();
+            testRoom.setVisible(true);
+            this.dispose();
         } else if (actionEvent.getSource() == updateButton) {
+//            System.out.println(roomNo);
+            boolean isUpdated = updateRoom(roomNo, roomType, roomCapacity, roomRent, roomStatus, roomDescription);
+            if (isUpdated) {
 
+                JOptionPane.showMessageDialog(null, "Room Updated Successfully.");
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Could not update room.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            Rooms room = Rooms.getInstance();
+            room.fetchAndDisplayRoomDetails();
+            room.setVisible(true);
+
+            this.dispose();
         }
     }
 
     public boolean updateRoom(int roomNo, String roomType, int capacity, double rent, String status, String description) {
         boolean isUpdated = false;
-        try{
+
+        try {
             DatabaseConnection db = new DatabaseConnection();
             CallableStatement statement = db.connection.prepareCall("{CALL sp_update_room(?, ?, ?, ?, ?, ?, ?)}");
 
@@ -197,7 +222,9 @@ public class AddNewRoom extends JFrame implements ActionListener {
             statement.executeQuery();
             isUpdated = statement.getBoolean(7);
 
-        }catch (Exception e){
+            db.connection.close();
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return isUpdated;
@@ -228,9 +255,5 @@ public class AddNewRoom extends JFrame implements ActionListener {
             e.printStackTrace();
         }
         return result;
-    }
-
-    public static void main(String[] args) {
-        new AddNewRoom();
     }
 }
