@@ -268,10 +268,15 @@ public class Rooms extends JFrame {
             statement.close();
 
             JOptionPane.showMessageDialog(null, "Room deleted successfully.");
+//            tableModel.setValueAt("null", selectedRow, tableModel.findColumn("Delete"));
 
-            tableModel.removeRow(selectedRow);
+//            tableModel.removeRow(selectedRow);
 
-            refreshTableData();
+
+//            refreshTableData();
+//            fetchAndDisplayRoomDetails();
+            dispose();
+            new Rooms();
         } catch (SQLException e) {
             handleSQLException(e);
         }
