@@ -20,10 +20,10 @@ public class Rooms extends JFrame {
     private final DatabaseConnection db = new DatabaseConnection();
     private int roomNo;
 
-    private Rooms() {
+    Rooms() {
         setTitle("Room Details");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(1000, 800);
+        setSize(1200, 850);
         setLocationRelativeTo(null);
 
         JPanel topPanel = new JPanel();

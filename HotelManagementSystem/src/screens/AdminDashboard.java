@@ -10,24 +10,34 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class AdminDashboard extends JFrame implements ActionListener {
-    private static RoundedButton roomButton;
-    private static RoundedButton bookingButton;
-    private static RoundedButton revenueButton;
+    private final RoundedButton roomButton;
+    private final RoundedButton bookingButton;
 
     public AdminDashboard() {
         super("Admin Dashboard");
 
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1200, 850);
+        setLocationRelativeTo(null); // Center the frame on the screen
+
+        JPanel contentPanel = new JPanel();
+        contentPanel.setBackground(new Color(12, 55, 64));
+        contentPanel.setLayout(new BorderLayout());
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(new Color(12, 55, 64));
+
         JLabel label1 = new JLabel("Hotel Management System");
-        label1.setBounds(650,10,800,100);
         label1.setForeground(Color.WHITE.brighter());
         label1.setFont(new Font("Arial", Font.BOLD, 40));
-        add(label1);
+        label1.setHorizontalAlignment(SwingConstants.CENTER);
+        label1.setBorder(BorderFactory.createEmptyBorder(0, 170, 0, 0)); // Move label 50 pixels to the right
+        topPanel.add(label1, BorderLayout.CENTER);
 
         JLabel logoutLabel = new JLabel("<html><i>Logout</i></html>");
         logoutLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        logoutLabel.setBounds(1760, 25, 170, 60);
         logoutLabel.setForeground(new Color(218, 215, 205));
-        add(logoutLabel);
+        logoutLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 30)); // Move logout button 30 pixels to the left
 
         // Add a mouse listener to the label
         logoutLabel.addMouseListener(new MouseAdapter() {
@@ -39,6 +49,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
             public void mouseExited(MouseEvent e) {
                 logoutLabel.setText("<html><i>Logout</i></html>");
             }
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 dispose();
@@ -50,62 +61,83 @@ public class AdminDashboard extends JFrame implements ActionListener {
         ImageIcon logoutImageIcon = new ImageIcon(ClassLoader.getSystemResource("assets/logout.png"));
         Image logoutImage = logoutImageIcon.getImage().getScaledInstance(60, 60, Image.SCALE_DEFAULT);
         logoutLabel.setIcon(new ImageIcon(logoutImage));
-        add(logoutLabel);
+        topPanel.add(logoutLabel, BorderLayout.EAST);
 
-        ImageIcon roomImageIcon = new ImageIcon(ClassLoader.getSystemResource("assets/bedroom.png"));
-        Image image = roomImageIcon.getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT);
-        ImageIcon roomImage = new ImageIcon(image);
-        JLabel roomImageLabel = new JLabel(roomImage);
-        roomImageLabel.setBounds(60, 200, 150, 150);
-        add(roomImageLabel);
+        contentPanel.add(topPanel, BorderLayout.NORTH);
+
+        ImageIcon roomsIcon = new ImageIcon(ClassLoader.getSystemResource("assets/bedroom.png"));
+        ImageIcon bookingsIcon = new ImageIcon(ClassLoader.getSystemResource("assets/booking.png"));
+        ImageIcon revenueIcon = new ImageIcon(ClassLoader.getSystemResource("assets/revenue.png"));
+
+        // Scale the images to 150x150 pixels
+        Image scaledRoomsImage = roomsIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        Image scaledBookingsImage = bookingsIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        Image scaledRevenueImage = revenueIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+
+        // Create ImageIcon instances with the scaled images
+        ImageIcon scaledRoomsIcon = new ImageIcon(scaledRoomsImage);
+        ImageIcon scaledBookingsIcon = new ImageIcon(scaledBookingsImage);
+        ImageIcon scaledRevenueIcon = new ImageIcon(scaledRevenueImage);
+
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        centerPanel.setBackground(new Color(12, 55, 64));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 50, 50, 50); // Add spacing around components
+
+        JLabel roomsLabel = new JLabel(scaledRoomsIcon);
+        centerPanel.add(roomsLabel, gbc);
+
+        gbc.gridx = 0; // Move to the next column
+        gbc.gridy = 1; // Move to the next row
 
         roomButton = new RoundedButton("Rooms");
-        roomButton.setBackground(new Color(218, 215, 205));
-        roomButton.setBounds(240, 255, 150, 45);
+        roomButton.setPreferredSize(new Dimension(150, 50));
         roomButton.setFont(new Font("Arial", Font.BOLD, 18));
+        roomButton.setBackground(new Color(65, 131, 215));
         roomButton.addActionListener(this);
         roomButton.setFocusable(false);
-        add(roomButton);
+        centerPanel.add(roomButton, gbc);
 
-        ImageIcon bookingImageIcon = new ImageIcon(ClassLoader.getSystemResource("assets/booking.png"));
-        Image bookingImage = bookingImageIcon.getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT);
-        ImageIcon bookingImageIcon2 = new ImageIcon(bookingImage);
-        JLabel bookingLabel = new JLabel(bookingImageIcon2);
-        bookingLabel.setBounds(60, 450, 150, 150);
-        add(bookingLabel);
+        gbc.gridx = 1; // Move to the next column
+        gbc.gridy = 0; // Reset to the first row
+
+        JLabel bookingsLabel = new JLabel(scaledBookingsIcon);
+        centerPanel.add(bookingsLabel, gbc);
+
+        gbc.gridx = 1; // Move to the next column
+        gbc.gridy = 1; // Move to the next row
 
         bookingButton = new RoundedButton("Bookings");
-        bookingButton.setBackground(new Color(218, 215, 205));
-        bookingButton.setBounds(240, 500, 150, 45);
+        bookingButton.setPreferredSize(new Dimension(150, 50));
         bookingButton.setFont(new Font("Arial", Font.BOLD, 18));
+        bookingButton.setBackground(new Color(65, 131, 215));
         bookingButton.addActionListener(this);
         bookingButton.setFocusable(false);
-        add(bookingButton);
+        centerPanel.add(bookingButton, gbc);
 
-        ImageIcon revenueImageIcon = new ImageIcon(ClassLoader.getSystemResource("assets/revenue.png"));
-        Image revenueImage = revenueImageIcon.getImage().getScaledInstance(150, 150, Image.SCALE_DEFAULT);
-        ImageIcon revenueImageIcon2 = new ImageIcon(revenueImage);
-        JLabel revenueLabel = new JLabel(revenueImageIcon2);
-        revenueLabel.setBounds(60, 700, 150, 150);
-        add(revenueLabel);
+        gbc.gridx = 2; // Move to the next column
+        gbc.gridy = 0; // Reset to the first row
 
-        revenueButton = new RoundedButton("Revenue");
-        revenueButton.setBackground(new Color(218, 215, 205));
-        revenueButton.setBounds(240, 750, 150, 45);
+        JLabel revenueLabel = new JLabel(scaledRevenueIcon);
+        centerPanel.add(revenueLabel, gbc);
+
+        gbc.gridx = 2; // Move to the next column
+        gbc.gridy = 1; // Move to the next row
+
+        RoundedButton revenueButton = new RoundedButton("Revenue");
+        revenueButton.setPreferredSize(new Dimension(150, 50));
         revenueButton.setFont(new Font("Arial", Font.BOLD, 18));
+        revenueButton.setBackground(new Color(65, 131, 215));
         revenueButton.addActionListener(this);
         revenueButton.setFocusable(false);
-        add(revenueButton);
+        centerPanel.add(revenueButton, gbc);
 
+        contentPanel.add(centerPanel, BorderLayout.CENTER);
 
-        // TODO: make a Panel to Show the Rooms
-
-        setLayout(null);
-        setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1920, 1080);
-        getContentPane().setBackground(new Color(12, 55, 64));
-        setLocationRelativeTo(null); // Center the frame on the screen
+        setContentPane(contentPanel);
         setVisible(true);
     }
 
@@ -115,12 +147,12 @@ public class AdminDashboard extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        if (actionEvent.getSource() == roomButton){
-            Rooms.getInstance();
+        if (actionEvent.getSource() == roomButton) {
+            new Rooms();
         } else if (actionEvent.getSource() == bookingButton) {
             new Bookings();
-        }else {
-            new  Revenue();
+        } else {
+            new Revenue();
         }
     }
 }
