@@ -183,13 +183,16 @@ public class AddNewRoom extends JFrame implements ActionListener {
             }
             // new line added
             // closing old instance first then opening new instance
-            Rooms testRoom = Rooms.getInstance();
+            /*Rooms testRoom = Rooms.getInstance();
             testRoom.dispose();
             Rooms.disposeObj();
             // regular code
-            testRoom = Rooms.getInstance();
+            testRoom = Rooms.getInstance();*/
+            FetchRoomDetails testRoom = new FetchRoomDetails();
+            testRoom.setTableModel(Rooms.tableModel);
+
             testRoom.fetchAndDisplayRoomDetails();
-            testRoom.setVisible(true);
+//            testRoom.setVisible(true);
             this.dispose();
         } else if (actionEvent.getSource() == updateButton) {
 //            System.out.println(roomNo);
@@ -202,9 +205,12 @@ public class AddNewRoom extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Could not update room.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
-            Rooms room = Rooms.getInstance();
+//            Rooms room = Rooms.getInstance();
+//            room.fetchAndDisplayRoomDetails();
+//            room.setVisible(true);
+            FetchRoomDetails room = new FetchRoomDetails();
+            room.setTableModel(Rooms.tableModel);
             room.fetchAndDisplayRoomDetails();
-            room.setVisible(true);
 
             this.dispose();
         }

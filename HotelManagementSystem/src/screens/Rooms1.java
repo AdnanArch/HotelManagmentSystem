@@ -8,10 +8,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.sql.CallableStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class Rooms extends JFrame {
+public class Rooms1 extends JFrame {
     private final JTable table;
     public static  DefaultTableModel tableModel;
     private final RoundedTextField searchField;
@@ -25,7 +24,7 @@ public class Rooms extends JFrame {
         return tableModel;
     }
 
-    Rooms() {
+    Rooms1() {
 
         setTitle("Room Details");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -215,11 +214,11 @@ public class Rooms extends JFrame {
 
             JOptionPane.showMessageDialog(null, "Room deleted successfully.");
             dispose();
-            new Rooms();
+            new Rooms1();
         } catch (SQLException e) {
             fetchRoomDetails.handleSQLException(e);
         }
     }
 
-    public static void main(String[] args) {new Rooms();}
+    public static void main(String[] args) {new Rooms1();}
 }
