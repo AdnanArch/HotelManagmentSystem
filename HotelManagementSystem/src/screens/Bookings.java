@@ -223,12 +223,14 @@ public class Bookings extends JFrame {
                         // Show a dialog box to choose the booking status
                         String[] options = {"Accept", "Cancel"};
                         JComboBox<String> statusComboBox = new JComboBox<>(options);
-                        int result = JOptionPane.showOptionDialog(Bookings.this, statusComboBox, "Select Booking Status", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, options[0]);
+
+                        JOptionPane.showOptionDialog(Bookings.this, statusComboBox, "Select Booking Status", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, options[0]);
 
                         // Retrieve the selected option value
                         String selectedOption = (String) statusComboBox.getSelectedItem();
 
                         // Perform the desired action based on the selected option
+                        assert selectedOption != null;
                         if (selectedOption.equals("Accept")) {
                             // Accepted status selected
                             String bookingStatus = "Accepted";
