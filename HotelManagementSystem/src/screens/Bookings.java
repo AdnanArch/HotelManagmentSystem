@@ -147,11 +147,12 @@ public class Bookings extends JFrame implements ActionListener {
 
                 // Create the SQL query with a WHERE clause to search for matching rooms
                 String sqlQuery = """
-                        SELECT c.customer_id AS ID, c.first_name, c.last_name, c.phone, r.room_no, rt.room_type, b.booking_status, r.room_status, b.start_date, b.end_date, b.booking_date
+                        SELECT c.first_name, c.last_name, c.phone, r.room_no, rt.room_type, b.booking_status, r.room_status, b.start_date, b.end_date, b.booking_date
                         FROM bookings AS b
                         JOIN customers AS c ON b.customer_id = c.customer_id
                         JOIN rooms AS r ON b.room_no = r.room_no
-                        JOIN room_types AS rt ON r.type_id = rt.type_id WHERE r.room_no LIKE ? OR rt.room_type LIKE ?""";
+                        JOIN room_types AS rt ON r.type_id = rt.type_id 
+                        WHERE r.room_no LIKE ? OR rt.room_type LIKE ?""";
 
                 // Prepare the statement
                 PreparedStatement preparedStatement = dbConnection.connection.prepareStatement(sqlQuery);
