@@ -3,6 +3,8 @@ package screens;
 import javax.swing.*;
 import java.awt.*;
 
+// TODO: revenue of whole hotel for a month for a day
+// TODO: revenue of individual room for a day for a month
 public class Revenue extends JFrame {
     Revenue(){
         setLayout(null);
