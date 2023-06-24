@@ -182,10 +182,11 @@ public class AddNewRoom extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Invalid Information");
             }
             // new line added
-
+            // closing old instance first then opening new instance
             Rooms testRoom = Rooms.getInstance();
             testRoom.dispose();
             Rooms.disposeObj();
+            // regular code
             testRoom = Rooms.getInstance();
             testRoom.fetchAndDisplayRoomDetails();
             testRoom.setVisible(true);
