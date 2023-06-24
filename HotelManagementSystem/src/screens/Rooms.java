@@ -112,6 +112,14 @@ public class Rooms extends JFrame {
     }
 
 
+    public static void disposeObj() {
+        // Dispose of any resources or perform cleanup operations here
+        instance = null;
+
+    }
+
+
+
 
 
     private void refreshTableData() {
@@ -275,8 +283,13 @@ public class Rooms extends JFrame {
 
 //            refreshTableData();
 //            fetchAndDisplayRoomDetails();
-            dispose();
-            new Rooms();
+//            dispose();
+//            new Rooms();
+            Rooms.disposeObj();
+            Rooms.getInstance();
+
+//            Rooms.getInstance().dispose();
+//            new Rooms();
         } catch (SQLException e) {
             handleSQLException(e);
         }

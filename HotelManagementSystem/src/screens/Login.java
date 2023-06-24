@@ -1,4 +1,5 @@
 package screens;
+import components.LoggedIn;
 
 import connection.DatabaseConnection;
 import components.RoundedButton;
@@ -132,6 +133,7 @@ public class Login extends JFrame implements ActionListener {
             } else {
                 boolean isCustomer = checkCustomerLogin(userName, password);
                 if (isCustomer) {
+                    LoggedIn.username = userName;
                     dispose();
                     new CustomerDashboard();
                 } else {
