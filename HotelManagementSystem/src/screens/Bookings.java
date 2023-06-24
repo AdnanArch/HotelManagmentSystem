@@ -1,6 +1,5 @@
 package screens;
 
-import components.RoundedButton;
 import components.RoundedTextField;
 import connection.DatabaseConnection;
 
@@ -8,49 +7,75 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class Bookings extends JFrame implements ActionListener {
-    private static RoundedButton searchButton;
-    private static RoundedTextField searchField;
-    private static DefaultTableModel tableModel;
-    public Bookings(){
-        super("Booking Management");
+public class Bookings extends JFrame {
+    //    private static Rooms instance;
+    private final JTable table;
+    private final DefaultTableModel tableModel;
+    private final RoundedTextField searchField;
+
+    private final DatabaseConnection db = new DatabaseConnection();
+//    private int roomNo;
+
+    Bookings() {
+        setTitle("Room Details");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(1700, 900);
+        setLocationRelativeTo(null);
+
+        JPanel topPanel = new JPanel();
+
+        JLabel searchRoomLabel = new JLabel("Search Booking:");
+        searchRoomLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        searchRoomLabel.setPreferredSize(new Dimension(150, 30));
 
         searchField = new RoundedTextField();
-        searchField.setBounds(60, 50, 250, 40);
-        searchField.setFont(new Font("Arial", Font.PLAIN, 17));
-        add(searchField);
+        searchField.setPreferredSize(new Dimension(200, 30));
+        searchField.setFont(new Font("Arial", Font.BOLD, 15));
 
-        searchButton = new RoundedButton("Search");
-        searchButton.setBounds(330, 50, 130, 40);
-        searchButton.setBackground(new Color(136, 208, 219));
-        searchButton.setFont(new Font("Arial", Font.BOLD, 17));
-        searchButton.addActionListener(this);
-        searchButton.setFocusable(false);
-        add(searchButton);
+        JButton searchButton = new JButton("Search");
+        searchButton.setPreferredSize(new Dimension(100, 30));
+        searchButton.setFont(new Font("Arial", Font.BOLD, 15));
+        searchButton.addActionListener(e -> {
+            String searchTerm = searchField.getText();
+            searchBooking(searchTerm);
+        });
 
-        RoundedButton clearButton = new RoundedButton("Clear");
-        clearButton.setBounds(480, 50, 130, 40);
-        clearButton.setBackground(new Color(136, 208, 219));
-        clearButton.setFont(new Font("Arial", Font.BOLD, 17));
-        clearButton.addActionListener(this);
-        clearButton.setFocusable(false);
-        add(clearButton);
+        JButton clearButton = new JButton("Clear");
+        clearButton.setPreferredSize(new Dimension(100, 30));
+        clearButton.setFont(new Font("Arial", Font.BOLD, 15));
+        clearButton.addActionListener(e -> clearSearch());
 
-        // Create a table model to hold the data
+        topPanel.add(searchRoomLabel);
+        topPanel.add(searchField);
+        topPanel.add(searchButton);
+        topPanel.add(clearButton);
+
         tableModel = new DefaultTableModel();
 
-        // Create the table with the table model
-        JTable table = new JTable(tableModel) {
+        tableModel.addColumn("ID");
+        tableModel.addColumn("Name");
+        tableModel.addColumn("Phone");
+        tableModel.addColumn("Room No");
+        tableModel.addColumn("Room Type");
+        tableModel.addColumn("Room Status");
+        tableModel.addColumn("Check In");
+        tableModel.addColumn("Check Out");
+        tableModel.addColumn("Booking Date");
+        tableModel.addColumn("Booking Status");
+        tableModel.addColumn("Action");
+
+        table = new JTable(tableModel) {
+
             @Override
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component component = super.prepareRenderer(renderer, row, column);
                 if (component instanceof JComponent jComponent) {
                     jComponent.setFont(new Font("Arial", Font.PLAIN, 16)); // Set the desired font size
-                    jComponent.setBackground(Color.WHITE.brighter());
+//                    jComponent.setBackground(Color.WHITE.brighter());
                 }
                 return component;
             }
@@ -58,140 +83,203 @@ public class Bookings extends JFrame implements ActionListener {
 
         table.setRowHeight(25); // Set the desired row height
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 17));
-        // Set table properties
         table.setFillsViewportHeight(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-        // Add the table to a scroll pane
+        table.getColumnModel().getColumn(10).setCellRenderer(new ButtonRenderer());
+        table.getColumnModel().getColumn(10).setCellEditor(new ButtonEditor(new JTextField()));
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(60, 110, 1380, 680);
-        add(scrollPane);
 
-        // Fetch data from the database and populate the table
-        fetchAndRefreshBookingsDataFromDatabase();
+        setLayout(new BorderLayout());
+        add(topPanel, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
 
-        setLayout(null);
-        setBounds(400, 170, 1500, 850);
-        getContentPane().setBackground(new Color(58, 109, 122));
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setResizable(false);
+        fetchAndDisplayBookingsDetails();
+
         setVisible(true);
     }
-
-    private void fetchAndRefreshBookingsDataFromDatabase() {
-        clearTableData(); // Clear the existing table data
-        clearTableColumns();
-        try {
-            // Create an instance of DatabaseConnection to establish the database connection
-            DatabaseConnection dbConnection = new DatabaseConnection();
-
-            CallableStatement statement = dbConnection.connection.prepareCall("{call sp_get_booking_details()}");
-
-            // Execute the query
-            ResultSet resultSet = statement.executeQuery();
-
-            // Get the metadata of the result set
-            ResultSetMetaData metaData = resultSet.getMetaData();
-
-            // Get the number of columns in the result set
-            int columnCount = metaData.getColumnCount();
-
-            // Add column names to the table model
-            for (int i = 1; i <= columnCount; i++) {
-                tableModel.addColumn(metaData.getColumnName(i));
-            }
-
-            // Add rows to the table model
-            while (resultSet.next()) {
-                Object[] rowData = new Object[columnCount];
-                for (int i = 1; i <= columnCount; i++) {
-                    rowData[i - 1] = resultSet.getObject(i);
-                }
-                tableModel.addRow(rowData);
-            }
-
-            // Close the result set and database connection
-            resultSet.close();
-            dbConnection.connection.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void clearTableColumns() {
-        while (tableModel.getColumnCount() > 0) {
-            tableModel.setColumnCount(0);
-        }
-    }
-
-    private void clearTableData() {
-        tableModel.setRowCount(0);
-    }
-
 
     public static void main(String[] args) {
         new Bookings();
     }
 
-    @Override
-    public void actionPerformed(ActionEvent actionEvent) {
-        if (actionEvent.getSource() == searchButton) {
-            String searchTerm = searchField.getText();
-            clearTableColumns();
-            clearTableData(); // Clear the existing table data
+    private void refreshTableData() {
+        tableModel.fireTableDataChanged();
+    }
 
-            try {
-                // Create an instance of DatabaseConnection to establish the database connection
-                DatabaseConnection dbConnection = new DatabaseConnection();
+    public void fetchAndDisplayBookingsDetails() {
+        clearTableData();
+        try {
+            // Prepare the stored procedure call
+            String storedProcedure = "{CALL sp_get_booking_details()}";
+            CallableStatement statement = db.connection.prepareCall(storedProcedure);
 
-                // Create the SQL query with a WHERE clause to search for matching rooms
-                String sqlQuery = """
-                        SELECT c.first_name, c.last_name, c.phone, r.room_no, rt.room_type, b.booking_status, r.room_status, b.start_date, b.end_date, b.booking_date
-                        FROM bookings AS b
-                        JOIN customers AS c ON b.customer_id = c.customer_id
-                        JOIN rooms AS r ON b.room_no = r.room_no
-                        JOIN room_types AS rt ON r.type_id = rt.type_id 
-                        WHERE r.room_no LIKE ? OR rt.room_type LIKE ?""";
+            renderBookingResultSet(statement);
+            statement.close();
 
-                // Prepare the statement
-                PreparedStatement preparedStatement = dbConnection.connection.prepareStatement(sqlQuery);
-                preparedStatement.setString(1, "%" + searchTerm + "%"); // Use wildcard '%' to match any part of the room number
-                preparedStatement.setString(2, "%" + searchTerm + "%"); // Use wildcard '%' to match any part of the room type
+            // Refresh the table data
+            refreshTableData();
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+    }
 
-                // Execute the query
-                ResultSet resultSet = preparedStatement.executeQuery();
+    public void searchBooking(String searchTerm) {
+        // Clear existing table data
+        clearTableData();
 
-                // Get the metadata of the result set
-                ResultSetMetaData metaData = resultSet.getMetaData();
+        try {
+            String storedProcedure = "{CALL sp_search_booking(?)}";
+            CallableStatement statement = db.connection.prepareCall(storedProcedure);
+            statement.setString(1, searchTerm);
 
-                // Get the number of columns in the result set
-                int columnCount = metaData.getColumnCount();
+            renderBookingResultSet(statement);
 
-                // Add column names to the table model
-                for (int i = 1; i <= columnCount; i++) {
-                    tableModel.addColumn(metaData.getColumnName(i));
-                }
+            statement.close();
 
-                // Add rows to the table model
-                while (resultSet.next()) {
-                    Object[] rowData = new Object[columnCount];
-                    for (int i = 1; i <= columnCount; i++) {
-                        rowData[i - 1] = resultSet.getObject(i);
-                    }
-                    tableModel.addRow(rowData);
-                }
+            // Refresh the table data
+            refreshTableData();
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+    }
 
-                resultSet.close();// Close the result set, statement, and database connection
-                preparedStatement.close();
-                dbConnection.connection.close();
+    private void clearSearch() {
+        searchField.setText("");
+        clearTableData();
+        fetchAndDisplayBookingsDetails();
+    }
 
-            } catch (SQLException e) {
-                e.printStackTrace();
+    private void renderBookingResultSet(CallableStatement statement) {
+        ResultSet resultSet;
+        try {
+            // Execute the stored procedure
+            resultSet = statement.executeQuery();
+
+            // Populate the table with data
+            while (resultSet.next()) {
+                int bookingID = resultSet.getInt("booking_id");
+                String name = resultSet.getString("Name");
+                String phone = resultSet.getString("phone");
+                int roomNo = resultSet.getInt("room_no");
+                String roomType = resultSet.getString("room_type");
+                String roomStatus = resultSet.getString("room_status");
+                String checkInDate = resultSet.getString("start_date");
+                String checkOutDate = resultSet.getString("end_date");
+                String bookingDate = resultSet.getString("booking_date");
+                String bookingStatus = resultSet.getString("booking_status");
+
+                // Add the row data to the table model
+                tableModel.addRow(new Object[]{bookingID, name, phone, roomNo, roomType, roomStatus, checkInDate, checkOutDate, bookingDate, bookingStatus, "Set Status"});
             }
-        }else {
-            searchField.setText("");
-            fetchAndRefreshBookingsDataFromDatabase();
+            resultSet.close();
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+    }
+
+    public void clearTableData() {
+        tableModel.setRowCount(0);
+    }
+
+    private void handleSQLException(SQLException e) {
+        JOptionPane.showMessageDialog(null, "An error occurred while accessing the database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private static class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText(value != null ? value.toString() : "");
+            return this;
+        }
+    }
+
+    private class ButtonEditor extends DefaultCellEditor {
+        private final JButton button;
+        private String buttonText;
+
+        public ButtonEditor(JTextField textField) {
+            super(textField);
+
+            button = new JButton();
+            button.setOpaque(true);
+            buttonText = "";
+
+            // Add ActionListener to the button
+            button.addActionListener(e -> {
+                // Retrieve the row number from the table data
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow != -1) {
+                    // Get the action command of the button
+                    String actionCommand = button.getActionCommand();
+                    int bookingID = (int) table.getValueAt(selectedRow, 0);
+                    int roomNo = (int) table.getValueAt(selectedRow, 3);
+
+                    // Perform the desired action based on the button clicked
+                    if (actionCommand.equals("Set Status")) {
+                        // Show a dialog box to choose the booking status
+                        String[] options = {"Accept", "Cancel"};
+                        JComboBox<String> statusComboBox = new JComboBox<>(options);
+                        int result = JOptionPane.showOptionDialog(Bookings.this, statusComboBox, "Select Booking Status", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, options[0]);
+
+                        // Retrieve the selected option value
+                        String selectedOption = (String) statusComboBox.getSelectedItem();
+
+                        // Perform the desired action based on the selected option
+                        if (selectedOption.equals("Accept")) {
+                            // Accepted status selected
+                            String bookingStatus = "Accepted";
+                            String roomStatus = "Occupied";
+                            // TODO: Update the booking status and room status in the database for the selected row
+                            // using the row value (row variable) and the values (bookingStatus and roomStatus) obtained here
+                            updateRoomAndBookingStatus(roomNo, bookingStatus, roomStatus, bookingID);
+                        } else if (selectedOption.equals("Cancel")) {
+                            // Cancel status selected
+                            String bookingStatus = "Cancelled";
+                            String roomStatus = "Available";
+                            // TODO: Update the booking status and room status in the database for the selected row
+                            // using the row value (row variable) and the values (bookingStatus and roomStatus) obtained here
+                            updateRoomAndBookingStatus(roomNo, bookingStatus, roomStatus, bookingID);
+                        }
+
+                    }
+                }
+            });
+        }
+
+        private void updateRoomAndBookingStatus(int roomNo, String bookingStatus, String roomStatus, int bookingID) {
+            try {
+                CallableStatement statement = db.connection.prepareCall("{CALL sp_update_booking_status(?, ?)}");
+                statement.setInt(1, bookingID);
+                statement.setString(2, bookingStatus);
+                statement.executeUpdate();
+                statement.close();
+
+                statement = db.connection.prepareCall("{CALL sp_update_room_status(?, ?)}");
+                statement.setInt(1, roomNo);
+                statement.setString(2, roomStatus);
+                statement.executeUpdate();
+                statement.close();
+
+                // Update the table data
+                fetchAndDisplayBookingsDetails();
+            } catch (SQLException e) {
+                handleSQLException(e);
+            }
+        }
+
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            buttonText = (value == null) ? "" : value.toString();
+            button.setText(buttonText);
+            return button;
+        }
+
+        public Object getCellEditorValue() {
+            return buttonText;
         }
     }
 }
