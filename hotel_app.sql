@@ -32,16 +32,6 @@ CREATE TABLE `admin_login` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `admin_login`
---
-
-LOCK TABLES `admin_login` WRITE;
-/*!40000 ALTER TABLE `admin_login` DISABLE KEYS */;
-INSERT INTO `admin_login` VALUES ('admin','admin');
-/*!40000 ALTER TABLE `admin_login` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Temporary view structure for view `booking_details`
 --
 
@@ -59,7 +49,8 @@ SET @saved_cs_client     = @@character_set_client;
                                               1 AS `room_status`,
                                               1 AS `start_date`,
                                               1 AS `end_date`,
-                                              1 AS `booking_date`*/;
+                                              1 AS `booking_date`,
+                                              1 AS `price`*/;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -87,16 +78,6 @@ CREATE TABLE `bookings` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `bookings`
---
-
-LOCK TABLES `bookings` WRITE;
-/*!40000 ALTER TABLE `bookings` DISABLE KEYS */;
-INSERT INTO `bookings` VALUES (1,53,1,'2023-06-14','2023-06-20','2023-06-24','Cancelled',60000),(8,54,2,'2023-06-15','2023-06-19','2023-06-24','Accepted',12000),(9,57,1,'2023-06-16','2023-06-18','2023-06-24','Accepted',10000),(10,58,3,'2023-06-17','2023-06-23','2023-06-24','Accepted',30000);
-/*!40000 ALTER TABLE `bookings` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `customers`
 --
 
@@ -119,16 +100,6 @@ CREATE TABLE `customers` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `customers`
---
-
-LOCK TABLES `customers` WRITE;
-/*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` VALUES (1,'Adnan','Rafique','adnanrafique','Test123#','adnandd2547@gmail.com','03085038859','Pakpattan 123','03467760117'),(2,'Ineesha','Arzoo','patisa','2.Amhunter,','ineesha@gmail.com','03145696766','Kassowal','03145696766'),(3,'Sumaira','Rafique','sumairarafique','2.Amhunter,','sumairarafique@gmail.com','03146767543','Noor Kot Pakpatan','03146767543'),(4,'Usman','Mubarak','usmanmubarak','Dd79931e,','usman12@gmail.com','03094324589','Pakpattan','03094324589');
-/*!40000 ALTER TABLE `customers` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `room_types`
 --
 
@@ -142,18 +113,8 @@ CREATE TABLE `room_types` (
                               `rent` float NOT NULL,
                               `description` varchar(100) DEFAULT NULL,
                               PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `room_types`
---
-
-LOCK TABLES `room_types` WRITE;
-/*!40000 ALTER TABLE `room_types` DISABLE KEYS */;
-INSERT INTO `room_types` VALUES (53,'Deluxe',5,10000,'Nothing'),(54,'Suite',3,3000,''),(57,'Suite',4,5000,''),(58,'Penthouse',5,5000,'');
-/*!40000 ALTER TABLE `room_types` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `rooms`
@@ -169,18 +130,8 @@ CREATE TABLE `rooms` (
                          PRIMARY KEY (`room_no`),
                          KEY `fk_room_type_id` (`type_id`),
                          CONSTRAINT `fk_room_type_id` FOREIGN KEY (`type_id`) REFERENCES `room_types` (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `rooms`
---
-
-LOCK TABLES `rooms` WRITE;
-/*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES (53,'Available',53),(54,'Occupied',54),(57,'Occupied',57),(58,'Occupied',58);
-/*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Dumping events for database 'hotel_app'
@@ -311,6 +262,157 @@ BEGIN
     FROM bookings
     WHERE booking_status = 'Available' OR booking_status = 'Confirmed';
     RETURN total_revenue;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_monthly_revenue_report` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_monthly_revenue_report`(OUT result BOOLEAN)
+BEGIN
+    DECLARE rowCount INT;
+
+    -- Check if there are any bookings in the current month
+    SELECT COUNT(*) INTO rowCount
+    FROM bookings
+    WHERE MONTH(start_date) = MONTH(CURRENT_DATE()) AND YEAR(start_date) = YEAR(CURRENT_DATE())
+      AND booking_status = 'Completed';
+
+    IF rowCount = 0 THEN
+        -- No bookings found
+        SET result = FALSE;
+    ELSE
+        -- Retrieve the monthly revenue information
+        SELECT booking_id, room_no, start_date, end_date, price
+        FROM bookings
+        WHERE MONTH(start_date) = MONTH(CURRENT_DATE())
+          AND YEAR(start_date) = YEAR(CURRENT_DATE()) AND booking_status = 'Completed';
+
+        SET result = TRUE;
+
+    END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_room_revenue_over_time_report` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_room_revenue_over_time_report`(
+    IN roomNumber INT,
+    OUT result BOOLEAN
+)
+BEGIN
+    DECLARE rowCount INT;
+
+    -- Check if there are any bookings for the specified room
+    SELECT COUNT(*) INTO rowCount FROM bookings WHERE room_no = roomNumber AND booking_status = 'Completed';
+
+    IF rowCount = 0 THEN
+        -- No bookings found
+        SET result = FALSE;
+    ELSE
+        -- Retrieve the revenue information for the specified room over time
+        SELECT booking_id, start_date, end_date, price
+        FROM bookings
+        WHERE room_no = roomNumber AND booking_status = 'Completed';
+
+        SET result = TRUE;
+    END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_specific_room_revenue_report` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_specific_room_revenue_report`(
+    IN p_roomNumber INT,
+    IN p_month INT,
+    IN p_year INT,
+    OUT result BOOLEAN
+)
+BEGIN
+    DECLARE rowCount INT;
+
+    -- Check if there are any bookings for the specified room in the given month and year
+    SELECT COUNT(*) INTO rowCount
+    FROM bookings
+    WHERE room_no = p_roomNumber AND MONTH(start_date) = p_month AND YEAR(start_date) = p_year AND booking_status = 'Completed';
+
+    IF rowCount = 0 THEN
+        -- No bookings found
+        SET result = FALSE;
+    ELSE
+        -- Retrieve the revenue information for the specified room in the given month and year
+        SELECT booking_id, room_no, start_date, end_date, price
+        FROM bookings
+        WHERE room_no = p_roomNumber AND MONTH(start_date) = p_month AND YEAR(start_date) = p_year AND booking_status = 'Completed';
+
+        SET result = TRUE;
+    END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_total_revenue_report` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_total_revenue_report`(OUT result BOOLEAN)
+BEGIN
+    DECLARE rowCount INT;
+
+    -- Check if there are any bookings
+    SELECT COUNT(*) INTO rowCount FROM bookings WHERE booking_status = 'Completed';
+
+    IF rowCount = 0 THEN
+        -- No bookings found
+        SET result = FALSE;
+    ELSE
+        -- Retrieve the total revenue information
+        SELECT booking_id, room_no, start_date, end_date, price
+        FROM bookings
+        WHERE booking_status = 'Completed';
+
+        SET result = TRUE;
+    END IF;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -738,7 +840,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
     /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-    /*!50001 VIEW `booking_details` AS select `b`.`booking_id` AS `booking_id`,concat(`c`.`first_name`,' ',`c`.`last_name`) AS `Name`,`c`.`phone` AS `phone`,`r`.`room_no` AS `room_no`,`rt`.`room_type` AS `room_type`,`b`.`booking_status` AS `booking_status`,`r`.`room_status` AS `room_status`,`b`.`start_date` AS `start_date`,`b`.`end_date` AS `end_date`,`b`.`booking_date` AS `booking_date` from (((`bookings` `b` join `customers` `c` on((`b`.`customer_id` = `c`.`customer_id`))) join `rooms` `r` on((`b`.`room_no` = `r`.`room_no`))) join `room_types` `rt` on((`r`.`type_id` = `rt`.`type_id`))) */;
+    /*!50001 VIEW `booking_details` AS select `b`.`booking_id` AS `booking_id`,concat(`c`.`first_name`,' ',`c`.`last_name`) AS `Name`,`c`.`phone` AS `phone`,`r`.`room_no` AS `room_no`,`rt`.`room_type` AS `room_type`,`b`.`booking_status` AS `booking_status`,`r`.`room_status` AS `room_status`,`b`.`start_date` AS `start_date`,`b`.`end_date` AS `end_date`,`b`.`booking_date` AS `booking_date`,`b`.`price` AS `price` from (((`bookings` `b` join `customers` `c` on((`b`.`customer_id` = `c`.`customer_id`))) join `rooms` `r` on((`b`.`room_no` = `r`.`room_no`))) join `room_types` `rt` on((`r`.`type_id` = `rt`.`type_id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -752,4 +854,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-06-24 14:56:15
+-- Dump completed on 2023-06-27 21:24:29
