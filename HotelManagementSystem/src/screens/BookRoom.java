@@ -10,7 +10,7 @@ import java.awt.*;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 
-public class Rooms1 extends JFrame {
+public class BookRoom extends JFrame {
     private final JTable table;
     public static  DefaultTableModel tableModel;
     private final RoundedTextField searchField;
@@ -24,7 +24,7 @@ public class Rooms1 extends JFrame {
         return tableModel;
     }
 
-    Rooms1() {
+    BookRoom() {
 
         setTitle("Room Details");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -54,16 +54,10 @@ public class Rooms1 extends JFrame {
         clearButton.setFont(new Font("Arial", Font.BOLD, 15));
         clearButton.addActionListener(e -> clearSearch());
 
-        JButton addNewRoomButton = new JButton("Add New Room");
-        addNewRoomButton.setPreferredSize(new Dimension(160, 30));
-        addNewRoomButton.setFont(new Font("Arial", Font.BOLD, 15));
-        addNewRoomButton.addActionListener(e -> new AddNewRoom());
-
         topPanel.add(searchRoomLabel);
         topPanel.add(searchField);
         topPanel.add(searchButton);
         topPanel.add(clearButton);
-        topPanel.add(addNewRoomButton);
 
         tableModel = new DefaultTableModel();
 
@@ -73,8 +67,7 @@ public class Rooms1 extends JFrame {
         tableModel.addColumn("Rent");
         tableModel.addColumn("Status");
         tableModel.addColumn("Description");
-        tableModel.addColumn("Edit");
-        tableModel.addColumn("Delete");
+        tableModel.addColumn("Book Now");
 
         table = new JTable(tableModel) {
 
@@ -96,8 +89,6 @@ public class Rooms1 extends JFrame {
 
         table.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
         table.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JTextField()));
-        table.getColumnModel().getColumn(7).setCellRenderer(new ButtonRenderer());
-        table.getColumnModel().getColumn(7).setCellEditor(new ButtonEditor(new JTextField()));
         JScrollPane scrollPane = new JScrollPane(table);
 
         setLayout(new BorderLayout());
@@ -172,7 +163,7 @@ public class Rooms1 extends JFrame {
                     String actionCommand = button.getActionCommand();
 
                     // Perform the desired action based on the button clicked
-                    if (actionCommand.equals("Edit")) {
+                    if (actionCommand.equals("Book Now")) {
                         System.out.println(roomNo);
                         AddNewRoom updateExistingRoom = new AddNewRoom();
                         updateExistingRoom.setRoomNo(roomNo);
@@ -183,11 +174,6 @@ public class Rooms1 extends JFrame {
                         updateExistingRoom.setRoomDescriptionTextArea(description);
                         updateExistingRoom.setAddRoomButtonVisibility();
                         updateExistingRoom.setRoomNo(roomNo);
-                    } else if (actionCommand.equals("Delete")) {
-                        int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete the room?", "Confirmation", JOptionPane.YES_NO_OPTION);
-                        if (dialogResult == JOptionPane.YES_OPTION) {
-                            deleteRoom(roomNo, selectedRow);
-                        }
                     }
                 }
             });
@@ -204,21 +190,7 @@ public class Rooms1 extends JFrame {
         }
     }
 
-    public void deleteRoom(int roomNo, int selectedRow) {
-        try {
-            String storedProcedure = "{CALL sp_delete_room_by_no(?)}";
-            CallableStatement statement = db.connection.prepareCall(storedProcedure);
-            statement.setInt(1, roomNo);
-            statement.executeUpdate();
-            statement.close();
 
-            JOptionPane.showMessageDialog(null, "Room deleted successfully.");
-            dispose();
-            new Rooms1();
-        } catch (SQLException e) {
-            fetchRoomDetails.handleSQLException(e);
-        }
-    }
 
-    public static void main(String[] args) {new Rooms1();}
+    public static void main(String[] args) {new BookRoom();}
 }

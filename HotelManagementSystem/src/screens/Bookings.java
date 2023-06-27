@@ -23,7 +23,7 @@ public class Bookings extends JFrame {
     Bookings() {
         setTitle("Room Details");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(1700, 900);
+        setSize(1750, 900);
         setLocationRelativeTo(null);
 
         JPanel topPanel = new JPanel();
@@ -66,6 +66,7 @@ public class Bookings extends JFrame {
         tableModel.addColumn("Check Out");
         tableModel.addColumn("Booking Date");
         tableModel.addColumn("Booking Status");
+        tableModel.addColumn("Price");
         tableModel.addColumn("Action");
 
         table = new JTable(tableModel) {
@@ -86,8 +87,8 @@ public class Bookings extends JFrame {
         table.setFillsViewportHeight(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
-        table.getColumnModel().getColumn(10).setCellRenderer(new ButtonRenderer());
-        table.getColumnModel().getColumn(10).setCellEditor(new ButtonEditor(new JTextField()));
+        table.getColumnModel().getColumn(11).setCellRenderer(new ButtonRenderer());
+        table.getColumnModel().getColumn(11).setCellEditor(new ButtonEditor(new JTextField()));
         JScrollPane scrollPane = new JScrollPane(table);
 
         setLayout(new BorderLayout());
@@ -168,9 +169,10 @@ public class Bookings extends JFrame {
                 String checkOutDate = resultSet.getString("end_date");
                 String bookingDate = resultSet.getString("booking_date");
                 String bookingStatus = resultSet.getString("booking_status");
+                double bookingPrice = resultSet.getDouble("price");
 
                 // Add the row data to the table model
-                tableModel.addRow(new Object[]{bookingID, name, phone, roomNo, roomType, roomStatus, checkInDate, checkOutDate, bookingDate, bookingStatus, "Set Status"});
+                tableModel.addRow(new Object[]{bookingID, name, phone, roomNo, roomType, roomStatus, checkInDate, checkOutDate, bookingDate, bookingStatus, bookingPrice, "Set Status"});
             }
             resultSet.close();
         } catch (SQLException e) {

@@ -16,9 +16,6 @@ public class FetchRoomDetails {
     public void setTableModel(DefaultTableModel tm){
         tableModel = tm;
     }
-//    FetchRoomDetails() {
-//        tableModel = new Rooms().getTableModel();
-//    }
     public void handleSQLException(SQLException e) {
         JOptionPane.showMessageDialog(null, "An error occurred while accessing the database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
     }
