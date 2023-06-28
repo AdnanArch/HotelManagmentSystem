@@ -12,13 +12,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Bookings extends JFrame {
-    //    private static Rooms instance;
     private final JTable table;
     private final DefaultTableModel tableModel;
     private final RoundedTextField searchField;
 
     private final DatabaseConnection db = new DatabaseConnection();
-//    private int roomNo;
 
     Bookings() {
         setTitle("Room Details");
@@ -76,7 +74,6 @@ public class Bookings extends JFrame {
                 Component component = super.prepareRenderer(renderer, row, column);
                 if (component instanceof JComponent jComponent) {
                     jComponent.setFont(new Font("Arial", Font.PLAIN, 16)); // Set the desired font size
-//                    jComponent.setBackground(Color.WHITE.brighter());
                 }
                 return component;
             }

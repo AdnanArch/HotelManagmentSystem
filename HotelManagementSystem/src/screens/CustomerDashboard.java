@@ -8,12 +8,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.print.Book;
 
 public class CustomerDashboard extends JFrame implements ActionListener {
     private final RoundedButton bookingButton;
     private final RoundedButton checkoutButton;
-    private final RoundedButton feedbackButton;
 
     public CustomerDashboard() {
         super("Customer Dashboard");
@@ -129,7 +127,7 @@ public class CustomerDashboard extends JFrame implements ActionListener {
         gbc.gridx = 2; // Move to the next column
         gbc.gridy = 1; // Move to the next row
 
-        feedbackButton = new RoundedButton("Feedback");
+        RoundedButton feedbackButton = new RoundedButton("Feedback");
         feedbackButton.setPreferredSize(new Dimension(150, 50));
         feedbackButton.setFont(new Font("Arial", Font.BOLD, 18));
         feedbackButton.setBackground(new Color(65, 131, 215));
