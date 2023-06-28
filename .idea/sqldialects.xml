@@ -6,6 +6,7 @@
     <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/BookNow.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/BookRoom.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/Bookings.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/CustomerBookings.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/FetchRoomDetails.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/Login.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/HotelManagementSystem/src/screens/Revenue.java" dialect="GenericSQL" />

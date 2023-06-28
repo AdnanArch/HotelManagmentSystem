@@ -1,5 +1,6 @@
 package screens;
 
+import components.LoggedIn;
 import components.RoundedButton;
 
 import javax.swing.*;
@@ -8,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 
 public class CustomerDashboard extends JFrame implements ActionListener {
     private final RoundedButton bookingButton;
@@ -150,7 +152,11 @@ public class CustomerDashboard extends JFrame implements ActionListener {
         if (actionEvent.getSource() == bookingButton) {
             new BookRoom();
         } else if (actionEvent.getSource() == checkoutButton) {
-            new Bookings();
+            try {
+                new CustomerBookings(LoggedIn.getCustomerID());
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         } else {
             new Revenue();
         }
