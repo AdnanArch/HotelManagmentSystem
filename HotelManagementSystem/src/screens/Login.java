@@ -133,7 +133,7 @@ public class Login extends JFrame implements ActionListener {
             } else {
                 boolean isCustomer = checkCustomerLogin(userName, password);
                 if (isCustomer) {
-                    LoggedIn.username = userName;
+                    LoggedIn.setUserName(userName);
                     dispose();
                     new CustomerDashboard();
                 } else {

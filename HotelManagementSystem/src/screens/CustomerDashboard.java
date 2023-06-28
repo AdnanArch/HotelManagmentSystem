@@ -150,7 +150,7 @@ public class CustomerDashboard extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if (actionEvent.getSource() == bookingButton) {
-            new Rooms();
+            new BookRoom();
         } else if (actionEvent.getSource() == checkoutButton) {
             new Bookings();
         } else {

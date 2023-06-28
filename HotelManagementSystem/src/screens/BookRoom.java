@@ -8,6 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.sql.CallableStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class BookRoom extends JFrame {
@@ -76,7 +77,6 @@ public class BookRoom extends JFrame {
                 Component component = super.prepareRenderer(renderer, row, column);
                 if (component instanceof JComponent jComponent) {
                     jComponent.setFont(new Font("Arial", Font.PLAIN, 16)); // Set the desired font size
-//                    jComponent.setBackground(Color.WHITE.brighter());
                 }
                 return component;
             }
@@ -96,8 +96,49 @@ public class BookRoom extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
 
         fetchRoomDetails.setTableModel(tableModel);
-        fetchRoomDetails.fetchAndDisplayRoomDetails();
+        fetchAndDisplayRoomsDetails();
         setVisible(true);
+    }
+
+    private void fetchAndDisplayRoomsDetails() {
+        fetchRoomDetails.clearTableData();
+        try {
+            // Prepare the stored procedure call
+            String storedProcedure = "{CALL sp_get_rooms_details()}";
+            CallableStatement statement = db.connection.prepareCall(storedProcedure);
+
+            renderRoomResultSet(statement);
+            statement.close();
+
+            // Refresh the table data
+            fetchRoomDetails.refreshTableData();
+        } catch (SQLException e) {
+            fetchRoomDetails.handleSQLException(e);
+        }
+    }
+
+    private void renderRoomResultSet(CallableStatement statement) {
+        ResultSet resultSet;
+        try {
+            // Execute the stored procedure
+            resultSet = statement.executeQuery();
+
+            // Populate the table with data
+            while (resultSet.next()) {
+                int roomID = resultSet.getInt("room_no");
+                String roomType = resultSet.getString("room_type");
+                int capacity = resultSet.getInt("capacity");
+                double rent = resultSet.getDouble("rent");
+                String status = resultSet.getString("room_status");
+                String description = resultSet.getString("description");
+
+                // Add the row data to the table model
+                tableModel.addRow(new Object[]{roomID, roomType, capacity, rent, status, description, "Book Now"});
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            fetchRoomDetails.handleSQLException(e);
+        }
     }
 
     public void searchRoom(String searchTerm) {
@@ -153,27 +194,17 @@ public class BookRoom extends JFrame {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1) {
                     roomNo = (int) table.getValueAt(selectedRow, 0);
-                    String roomType = table.getValueAt(selectedRow, 1).toString();
-                    int capacity = (int) table.getValueAt(selectedRow, 2);
-                    double rent = (double) table.getValueAt(selectedRow, 3);
-                    String status = table.getValueAt(selectedRow, 4).toString();
-                    String description = table.getValueAt(selectedRow, 5).toString();
-
                     // Get the action command of the button
                     String actionCommand = button.getActionCommand();
 
                     // Perform the desired action based on the button clicked
                     if (actionCommand.equals("Book Now")) {
-                        System.out.println(roomNo);
-                        AddNewRoom updateExistingRoom = new AddNewRoom();
-                        updateExistingRoom.setRoomNo(roomNo);
-                        updateExistingRoom.setRoomComboBox(roomType);
-                        updateExistingRoom.setRoomCapacityComboBox(capacity);
-                        updateExistingRoom.setRentTextField(rent);
-                        updateExistingRoom.setRoomStatusComboBox(status);
-                        updateExistingRoom.setRoomDescriptionTextArea(description);
-                        updateExistingRoom.setAddRoomButtonVisibility();
-                        updateExistingRoom.setRoomNo(roomNo);
+                        roomNo = (int) table.getValueAt(selectedRow, 0);
+                        String roomType = table.getValueAt(selectedRow, 1).toString();
+                        int capacity = (int) table.getValueAt(selectedRow, 2);
+                        String status = table.getValueAt(selectedRow, 4).toString();
+                        String description = table.getValueAt(selectedRow, 5).toString();
+                        new BookNow(roomNo, capacity, roomType, status, description);
                     }
                 }
             });
