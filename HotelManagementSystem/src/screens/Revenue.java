@@ -27,7 +27,7 @@ public class Revenue extends JFrame {
 
     public Revenue() {
         setTitle("Revenue Reports");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -158,7 +158,9 @@ public class Revenue extends JFrame {
                 // Execute the stored procedure
                 statement.execute();
                 boolean dataExists = statement.getBoolean(4);
+
                 if (dataExists) {
+                    tableModel.setRowCount(0);
                     ResultSet resultSet;
                     // Execute the stored procedure
                     resultSet = statement.executeQuery();
@@ -246,6 +248,7 @@ public class Revenue extends JFrame {
 
             // Call the stored procedure and retrieve the data
             try {
+                tableModel.setRowCount(0);
                 DatabaseConnection db = new DatabaseConnection();
                 CallableStatement statement = db.connection.prepareCall("{CALL get_room_revenue_over_time_report(?, ?)}");
 
@@ -272,10 +275,9 @@ public class Revenue extends JFrame {
                     }
                     resultSet.close();
 
+                }else{
+                    JOptionPane.showMessageDialog(null, "No data found");
                 }
-//                else {
-//                    JOptionPane.showMessageDialog(null, "No data found");
-//                }
             } catch (SQLException ex) {
                 // Handle any database errors
                 ex.printStackTrace();
@@ -366,9 +368,6 @@ public class Revenue extends JFrame {
                 resultSet.close();
 
             }
-//            else {
-//                JOptionPane.showMessageDialog(null, "No data found");
-//            }
         } catch (SQLException ex) {
             // Handle any database errors
             ex.printStackTrace();
@@ -452,9 +451,6 @@ public class Revenue extends JFrame {
                 resultSet.close();
 
             }
-//            else {
-//                JOptionPane.showMessageDialog(null, "No data found");
-//            }
         } catch (SQLException ex) {
             // Handle any database errors
             ex.printStackTrace();
@@ -554,8 +550,6 @@ public class Revenue extends JFrame {
 
         return panel;
     }
-
-
 
     private void showPanel(JPanel panel) {
         getContentPane().removeAll();
