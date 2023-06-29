@@ -232,7 +232,7 @@ public class Bookings extends JFrame {
                         assert selectedOption != null;
                         if (selectedOption.equals("Accept")) {
                             // Accepted status selected
-                            String bookingStatus = "Accepted";
+                            String bookingStatus = "Booked";
                             String roomStatus = "Occupied";
                             // TODO: Update the booking status and room status in the database for the selected row
                             // using the row value (row variable) and the values (bookingStatus and roomStatus) obtained here

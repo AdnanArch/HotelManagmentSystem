@@ -132,8 +132,8 @@ public class CustomerBookings extends JFrame {
         try {
             String storedProcedure = "{CALL sp_search_user_booking(?, ?)}";
             CallableStatement statement = db.connection.prepareCall(storedProcedure);
-            statement.setInt(1, customerId);
-            statement.setString(2, searchTerm);
+            statement.setString(1, searchTerm);
+            statement.setInt(2, customerId);
 
             renderBookingResultSet(statement);
             statement.close();
@@ -212,12 +212,12 @@ public class CustomerBookings extends JFrame {
                     int roomNo = (int) table.getValueAt(selectedRow, 3);
 
                     if (actionCommand.equals("Cancel")) {
-                        String bookingStatus = "Cancelled";
+                        String bookingStatus = "Cancel Booking";
                         String roomStatus = "Available";
                         updateRoomAndBookingStatus(roomNo, bookingStatus, roomStatus, bookingID);
                     } else if (actionCommand.equals("Checkout")) {
                         // Perform the checkout action here
-                        performCheckout(bookingID);
+                        performCheckout(bookingID, selectedRow);
                     }
                 }
             });
@@ -243,10 +243,30 @@ public class CustomerBookings extends JFrame {
             }
         }
 
-        private void performCheckout(int bookingID) {
-            // Perform the checkout action for the specified booking ID
-            // You can add your implementation here based on your requirements
+        private void performCheckout(int bookingID, int selectedRow) {
+            try {
+                String roomStatus = (String) tableModel.getValueAt(selectedRow, 5);
+                String bookingStatus = (String) tableModel.getValueAt(selectedRow, 9);
+                if (bookingStatus.equals("Booked") && roomStatus.equals("Occupied")) {
+                    // Create a CallableStatement to execute the stored procedure
+                    CallableStatement statement = db.connection.prepareCall("{CALL sp_perform_checkout(?)}");
+                    statement.setInt(1, bookingID);
+                    statement.executeUpdate();
+                    statement.close();
+
+                    // Refresh the table data to reflect the updated booking information
+                    fetchAndDisplayCustomerBookings();
+
+                    // Display a message indicating successful checkout
+                    JOptionPane.showMessageDialog(this.getComponent(), "You have checked out.", "Checkout", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this.getComponent(), "You can not check out this room.", "Checkout Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (SQLException e) {
+                handleSQLException(e);
+            }
         }
+
 
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             buttonText = (value == null) ? "" : value.toString();

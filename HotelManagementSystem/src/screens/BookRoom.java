@@ -149,7 +149,7 @@ public class BookRoom extends JFrame {
             CallableStatement statement = db.connection.prepareCall(storedProcedure);
             statement.setString(1, searchTerm);
 
-            fetchRoomDetails.renderRoomResultSet(statement);
+            renderRoomResultSet(statement);
 
             statement.close();
 
@@ -163,7 +163,7 @@ public class BookRoom extends JFrame {
     private void clearSearch() {
         searchField.setText("");
         fetchRoomDetails.clearTableData();
-        fetchRoomDetails.fetchAndDisplayRoomDetails();
+        fetchAndDisplayRoomsDetails();
     }
 
     private static class ButtonRenderer extends JButton implements TableCellRenderer {
