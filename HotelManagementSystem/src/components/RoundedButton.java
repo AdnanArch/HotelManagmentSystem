@@ -11,6 +11,10 @@ public class RoundedButton extends JButton {
     public RoundedButton(String text) {
         super(text);
         setOpaque(false);
+        setFont(new Font("Sans-serif", Font.PLAIN, 18));
+//        setForeground(new Color(255, 255, 255));
+//        setBackground(new Color(52, 152, 219));
+        setFocusable(false);
     }
 
     @Override
@@ -20,7 +24,7 @@ public class RoundedButton extends JButton {
 
         int width = getWidth();
         int height = getHeight();
-        Shape shape = new RoundRectangle2D.Float(0, 0, width, height, ARC_WIDTH, ARC_HEIGHT);
+        Shape shape = new RoundRectangle2D.Float(0, 0, width - 1, height - 1, ARC_WIDTH, ARC_HEIGHT);
 
         g2.setColor(getBackground());
         g2.fill(shape);
@@ -34,6 +38,8 @@ public class RoundedButton extends JButton {
 
     @Override
     protected void paintBorder(Graphics g) {
-        // Remove border painting
+        // Paint the border
+        g.setColor(getForeground());
+        g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, ARC_WIDTH, ARC_HEIGHT);
     }
 }
