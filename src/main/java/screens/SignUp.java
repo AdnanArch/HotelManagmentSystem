@@ -1,14 +1,19 @@
 package screens;
 
-import connection.DatabaseConnection;
 import components.RoundedButton;
 import components.RoundedPasswordField;
 import components.RoundedTextField;
+import connection.DatabaseConnection;
+import email.GEmailSender;
+import email.OTPGenerator;
 import security.Validator;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 
@@ -22,13 +27,14 @@ public class SignUp extends JFrame implements ActionListener {
     private static RoundedTextField phone;
     private static RoundedTextField emergencyContact;
     private static RoundedButton signUpButton;
-
     DatabaseConnection db;
-    SignUp(){
+    private String generatedOTP; // Store the generated OTP
+
+    SignUp() {
         super("Sign Up");
         db = new DatabaseConnection();
         JLabel label1 = new JLabel("Create new Account");
-        label1.setBounds(320,50,500,100);
+        label1.setBounds(320, 50, 500, 100);
         label1.setForeground(Color.WHITE.brighter());
         label1.setFont(new Font("Arial", Font.BOLD, 40));
         add(label1);
@@ -138,7 +144,7 @@ public class SignUp extends JFrame implements ActionListener {
         add(signUpButton);
 
         JLabel label2 = new JLabel("Already Registered? ");
-        label2.setBounds(440,650,250,100);
+        label2.setBounds(440, 650, 250, 100);
         label2.setForeground(Color.WHITE.brighter());
         label2.setFont(new Font("Arial", Font.BOLD, 18));
         add(label2);
@@ -159,6 +165,7 @@ public class SignUp extends JFrame implements ActionListener {
             public void mouseExited(MouseEvent e) {
                 signInLabel.setText("<html><i>Login</i></html>");
             }
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 Login login = new Login();
@@ -179,9 +186,13 @@ public class SignUp extends JFrame implements ActionListener {
         setResizable(false);
     }
 
+    public static void main(String[] args) {
+        new SignUp();
+    }
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        if(actionEvent.getSource() == signUpButton){
+        if (actionEvent.getSource() == signUpButton) {
             try {
                 String firstNameText = firstName.getText().trim();
                 String lastNameText = lastName.getText().trim();
@@ -193,60 +204,161 @@ public class SignUp extends JFrame implements ActionListener {
                 String addressText = address.getText().trim();
                 String emergencyContactText = emergencyContact.getText().trim();
 
-                if (firstNameText.isEmpty() || lastNameText.isEmpty() || userNameText.isEmpty() || passwordText.isEmpty()
-                        || emailText.isEmpty() || phoneText.isEmpty() || addressText.isEmpty()|| emergencyContactText.isEmpty()){
-                    JOptionPane.showMessageDialog(this, "Form is Incomplete");
-                }else{
-                    Validator validator = new Validator();
-                    // level 1 validation
-                    if(validator.isName(firstNameText) && validator.isName(lastNameText) && validator.isUserName(userNameText)
-                    && validator.checkPassword(passwordText) && validator.isEmail(emailText) && validator.isAddress(addressText)
-                    && validator.isPhoneNumber(phoneText) && validator.isPhoneNumber(emergencyContactText)) {
-                        System.out.println("Entered info is correct");
-                        // level 2 validation
-                        // check if username is unique or not
-                        boolean unique = true;
-                        CallableStatement statement = db.connection.prepareCall("{CALL sp_get_customer_username}");
-                        ResultSet results = statement.executeQuery();
-                        while(results.next()) {
-                            if(results.getString(1).equals(userNameText)) {
-                                unique = false;
+                Validator validator = new Validator();
+                String validationError = validator.validateCustomerData(firstNameText, lastNameText, userNameText, emailText, passwordText, addressText, phoneText, emergencyContactText);
+
+                if (validationError != null) {
+                    JOptionPane.showMessageDialog(this, validationError);
+                } else {
+                    boolean unique = checkIfUsernameIsUnique(userNameText);
+                    if (!unique) {
+                        JOptionPane.showMessageDialog(this, "Account with this username already exists.");
+                    } else {
+                        // Create and customize the loading dialog
+                        JDialog loadingDialog = createLoadingDialog();
+
+                        // Perform time-consuming task in a separate thread
+                        Thread otpThread = new Thread(() -> {
+                            try {
+                                String generatedOTP = OTPGenerator.generateOTP();
+                                boolean otpStatus = sendOTP(emailText, generatedOTP);
+                                if (otpStatus) {
+                                    SwingUtilities.invokeLater(() -> {
+                                        loadingDialog.dispose(); // Close the loading dialog
+                                        String enteredOTP = showOTPInputDialog();
+                                        if (!enteredOTP.isEmpty() && enteredOTP.equals(generatedOTP)) {
+                                            registerCustomer(firstNameText, lastNameText, userNameText, passwordText, emailText, addressText, phoneText, emergencyContactText);
+                                        } else if (!enteredOTP.isEmpty()) {
+                                            JOptionPane.showMessageDialog(this, "Incorrect OTP. Please try again.");
+                                        }
+                                    });
+                                } else {
+                                    SwingUtilities.invokeLater(() -> {
+                                        loadingDialog.dispose(); // Close the loading dialog
+                                        JOptionPane.showMessageDialog(this, "Use stable internet connection. Try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                                    });
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                SwingUtilities.invokeLater(() -> {
+                                    loadingDialog.dispose(); // Close the loading dialog
+                                    JOptionPane.showMessageDialog(this, "An error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                                });
                             }
-                        }
-                        if(!unique) {
-                            JOptionPane.showMessageDialog(this, "username already used, kindly use an unique username");
+                        });
 
-                        }else {
-                            statement = db.connection.prepareCall("{CALL sp_sign_up(?, ?, ?, ?, ?, ?, ?, ?)}");
-                            statement.setString(1, firstNameText);
-                            statement.setString(2, lastNameText);
-                            statement.setString(3, userNameText);
-                            statement.setString(4, passwordText);
-                            statement.setString(5, emailText);
-                            statement.setString(6, addressText);
-                            statement.setString(7, phoneText);
-                            statement.setString(8, emergencyContactText);
-                            try{
-                                statement.execute();
-                                JOptionPane.showMessageDialog(this, "Sign Up Successful");
-                                dispose();
-                                new Login();
-
-
-                            }catch (Exception ex) {
-//                            ex.printStackTrace();
-                                System.out.println(ex.getMessage());
-                            }
-                        }
-
-                    }else{
-                        JOptionPane.showMessageDialog(this, validator.errorString());
+                        otpThread.start();
                     }
                 }
-
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private JDialog createLoadingDialog(){
+        // Create and customize the loading dialog
+        JDialog loadingDialog = new JDialog();
+        loadingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        loadingDialog.setUndecorated(true);
+        loadingDialog.setSize(350, 150);
+        loadingDialog.setLocationRelativeTo(this);
+
+        // Create the panel for the loading dialog
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Create the title label
+        JLabel titleLabel = new JLabel("Processing...");
+        titleLabel.setFont(new Font("Sans-serif", Font.BOLD, 18));
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+        panel.add(titleLabel, BorderLayout.NORTH);
+
+        // Create the message label
+        JLabel messageLabel = new JLabel("Please wait while the OTP is being sent.");
+        messageLabel.setHorizontalAlignment(JLabel.CENTER);
+        panel.add(messageLabel, BorderLayout.CENTER);
+
+        // Create the progress bar
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true);
+        panel.add(progressBar, BorderLayout.SOUTH);
+
+        loadingDialog.add(panel);
+        loadingDialog.setVisible(true);
+
+        return loadingDialog;
+    }
+
+    private String showOTPInputDialog() {
+        JPanel panel = new JPanel();
+        JLabel label = new JLabel("Enter the OTP sent to your email:");
+        JTextField otpField = new RoundedTextField();
+        otpField.setFont(new Font("Arial", Font.PLAIN, 17)); // Set the font for the text field
+        otpField.setPreferredSize(new Dimension(200, 30)); // Set the preferred size for the text field
+        panel.add(label);
+        panel.add(otpField);
+
+        int option = JOptionPane.showOptionDialog(
+                this,
+                panel,
+                "Enter OTP",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                null
+        );
+
+        if (option == JOptionPane.OK_OPTION) {
+            return otpField.getText();
+        }
+
+        return ""; // Return empty string instead of null when cancel or close is clicked
+    }
+
+    private boolean sendOTP(String email, String otp) {
+        GEmailSender emailSender = new GEmailSender();
+        String from = "adnaninreallife@gmail.com"; // Replace with your Gmail email address
+        String subject = "OTP for Sign Up";
+        String text = "Your OTP is: " + otp;
+        return emailSender.sendEmail(email, from, subject, text);
+    }
+
+    private boolean checkIfUsernameIsUnique(String userName) {
+        try {
+            CallableStatement statement = db.connection.prepareCall("{CALL sp_get_customer_username}");
+            ResultSet results = statement.executeQuery();
+            while (results.next()) {
+                if (results.getString(1).equals(userName)) {
+                    return false;
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+        return true;
+    }
+
+    private void registerCustomer(String firstName, String lastName, String userName, String password, String email,
+                                  String address, String phone, String emergencyContact) {
+        try {
+            CallableStatement statement = db.connection.prepareCall("{CALL sp_sign_up(?, ?, ?, ?, ?, ?, ?, ?)}");
+            statement.setString(1, firstName);
+            statement.setString(2, lastName);
+            statement.setString(3, userName);
+            statement.setString(4, password);
+            statement.setString(5, email);
+            statement.setString(6, address);
+            statement.setString(7, phone);
+            statement.setString(8, emergencyContact);
+
+            statement.execute();
+            JOptionPane.showMessageDialog(this, "Sign Up Successful");
+            dispose();
+            new Login();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
     }
 }
