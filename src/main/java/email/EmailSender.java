@@ -6,7 +6,7 @@ import jakarta.mail.internet.MimeMessage;
 
 import java.util.Properties;
 
-public class GEmailSender {
+public class EmailSender {
 
     public boolean sendEmail(String to, String from, String subject, String text) {
         boolean flag = false;
