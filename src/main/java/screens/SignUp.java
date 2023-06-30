@@ -1,10 +1,8 @@
 package screens;
 
-import components.RoundedButton;
-import components.RoundedPasswordField;
-import components.RoundedTextField;
+import components.*;
 import connection.DatabaseConnection;
-import email.GEmailSender;
+import email.EmailSender;
 import email.OTPGenerator;
 import security.Validator;
 
@@ -28,7 +26,7 @@ public class SignUp extends JFrame implements ActionListener {
     private static RoundedTextField emergencyContact;
     private static RoundedButton signUpButton;
     DatabaseConnection db;
-    private String generatedOTP; // Store the generated OTP
+//    private String generatedOTP; // Store the generated OTP
 
     SignUp() {
         super("Sign Up");
@@ -210,22 +208,28 @@ public class SignUp extends JFrame implements ActionListener {
                 if (validationError != null) {
                     JOptionPane.showMessageDialog(this, validationError);
                 } else {
-                    boolean unique = checkIfUsernameIsUnique(userNameText);
-                    if (!unique) {
+                    boolean uniqueUsername = checkIfUsernameIsUnique(userNameText);
+                    boolean uniqueEmail = checkIfEmailIsUnique(emailText);
+                    if (!uniqueUsername) {
                         JOptionPane.showMessageDialog(this, "Account with this username already exists.");
+                    } else if (!uniqueEmail) {
+                        JOptionPane.showMessageDialog(this, "Account with this email already exists.");
                     } else {
                         // Create and customize the loading dialog
-                        JDialog loadingDialog = createLoadingDialog();
+                        ProgressLoader loader = new ProgressLoader();
+                        JDialog loadingDialog = loader.createLoadingDialog("Please wait while the OTP is being sent.");
 
                         // Perform time-consuming task in a separate thread
                         Thread otpThread = new Thread(() -> {
                             try {
-                                String generatedOTP = OTPGenerator.generateOTP();
+                                OTPGenerator otpGenerator = new OTPGenerator();
+                                String generatedOTP = otpGenerator.generateOTP();
                                 boolean otpStatus = sendOTP(emailText, generatedOTP);
                                 if (otpStatus) {
                                     SwingUtilities.invokeLater(() -> {
                                         loadingDialog.dispose(); // Close the loading dialog
-                                        String enteredOTP = showOTPInputDialog();
+                                        OTPInputDialog otpInputDialog = new OTPInputDialog();
+                                        String enteredOTP = otpInputDialog.showOTPInputDialog();
                                         if (!enteredOTP.isEmpty() && enteredOTP.equals(generatedOTP)) {
                                             registerCustomer(firstNameText, lastNameText, userNameText, passwordText, emailText, addressText, phoneText, emergencyContactText);
                                         } else if (!enteredOTP.isEmpty()) {
@@ -256,69 +260,8 @@ public class SignUp extends JFrame implements ActionListener {
         }
     }
 
-    private JDialog createLoadingDialog(){
-        // Create and customize the loading dialog
-        JDialog loadingDialog = new JDialog();
-        loadingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        loadingDialog.setUndecorated(true);
-        loadingDialog.setSize(350, 150);
-        loadingDialog.setLocationRelativeTo(this);
-
-        // Create the panel for the loading dialog
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        // Create the title label
-        JLabel titleLabel = new JLabel("Processing...");
-        titleLabel.setFont(new Font("Sans-serif", Font.BOLD, 18));
-        titleLabel.setHorizontalAlignment(JLabel.CENTER);
-        panel.add(titleLabel, BorderLayout.NORTH);
-
-        // Create the message label
-        JLabel messageLabel = new JLabel("Please wait while the OTP is being sent.");
-        messageLabel.setHorizontalAlignment(JLabel.CENTER);
-        panel.add(messageLabel, BorderLayout.CENTER);
-
-        // Create the progress bar
-        JProgressBar progressBar = new JProgressBar();
-        progressBar.setIndeterminate(true);
-        panel.add(progressBar, BorderLayout.SOUTH);
-
-        loadingDialog.add(panel);
-        loadingDialog.setVisible(true);
-
-        return loadingDialog;
-    }
-
-    private String showOTPInputDialog() {
-        JPanel panel = new JPanel();
-        JLabel label = new JLabel("Enter the OTP sent to your email:");
-        JTextField otpField = new RoundedTextField();
-        otpField.setFont(new Font("Arial", Font.PLAIN, 17)); // Set the font for the text field
-        otpField.setPreferredSize(new Dimension(200, 30)); // Set the preferred size for the text field
-        panel.add(label);
-        panel.add(otpField);
-
-        int option = JOptionPane.showOptionDialog(
-                this,
-                panel,
-                "Enter OTP",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                null,
-                null
-        );
-
-        if (option == JOptionPane.OK_OPTION) {
-            return otpField.getText();
-        }
-
-        return ""; // Return empty string instead of null when cancel or close is clicked
-    }
-
     private boolean sendOTP(String email, String otp) {
-        GEmailSender emailSender = new GEmailSender();
+        EmailSender emailSender = new EmailSender();
         String from = "adnaninreallife@gmail.com"; // Replace with your Gmail email address
         String subject = "OTP for Sign Up";
         String text = "Your OTP is: " + otp;
@@ -335,10 +278,26 @@ public class SignUp extends JFrame implements ActionListener {
                 }
             }
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            JOptionPane.showMessageDialog(null, ex.getMessage());
         }
         return true;
     }
+
+    private boolean checkIfEmailIsUnique(String emailText) {
+        try {
+            CallableStatement statement = db.connection.prepareCall("{CALL sp_get_customer_email}");
+            ResultSet results = statement.executeQuery();
+            while (results.next()) {
+                if (results.getString(1).equals(emailText)) {
+                    return false;
+                }
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        return true;
+    }
+
 
     private void registerCustomer(String firstName, String lastName, String userName, String password, String email,
                                   String address, String phone, String emergencyContact) {
