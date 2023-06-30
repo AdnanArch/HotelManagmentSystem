@@ -103,8 +103,6 @@ public class Revenue extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-
-
     private RoundedButton createReportButton(String text) {
         RoundedButton button = new RoundedButton(text);
         button.setPreferredSize(new Dimension(280, 50));
