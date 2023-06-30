@@ -1,5 +1,7 @@
 package screens;
 
+import components.RoundedButton;
+import components.RoundedTextField;
 import connection.DatabaseConnection;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -10,6 +12,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.CallableStatement;
@@ -17,70 +21,99 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-
-public class Revenue extends JFrame {
-    private final JPanel specificRoomPanel;
-    private final JPanel roomRevenueOverTimePanel;
-    private final JPanel monthlyRevenuePanel;
-    private final JPanel totalRevenuePanel;
+public class Revenue extends JFrame implements ActionListener {
+    private final JPanel rightPanel;
+    private static RoundedButton specificRoomButton;
+    private static RoundedButton roomRevenueOverTimeButton;
+    private static RoundedButton monthlyRevenueButton;
+    private static RoundedButton totalRevenueButton;
 
 
     public Revenue() {
         setTitle("Revenue Reports");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1250, 850);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Create menu bar
-        JMenuBar menuBar = new JMenuBar();
+        // Create left panel for buttons
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.setPreferredSize(new Dimension(350, getHeight()));
 
-        // Create "Reports" menu
-        JMenu reportsMenu = new JMenu("Reports");
-        reportsMenu.setFont(new Font("Arial", Font.PLAIN, 20));
+        leftPanel.setBackground(new Color(210, 225, 242));
+        leftPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
-        // Create submenu items for different reports
-        JMenuItem specificRoomReportItem = new JMenuItem("Specific Room Report");
-        specificRoomReportItem.setFont(new Font("Arial", Font.PLAIN, 18));
-        JMenuItem roomRevenueOverTimeItem = new JMenuItem("Room Revenue Over Time Report");
-        roomRevenueOverTimeItem.setFont(new Font("Arial", Font.PLAIN, 18));
-        JMenuItem monthlyRevenueReportItem = new JMenuItem("Monthly Revenue Report");
-        monthlyRevenueReportItem.setFont(new Font("Arial", Font.PLAIN, 18));
-        JMenuItem totalRevenueReportItem = new JMenuItem("Total Revenue Report");
-        totalRevenueReportItem.setFont(new Font("Arial", Font.PLAIN, 18));
+        // Create right panel for report panels
+        rightPanel = new JPanel();
+        rightPanel.setLayout(new CardLayout());
+        rightPanel.setBackground(Color.WHITE);
 
-        // Add submenu items to "Reports" menu
-        reportsMenu.add(specificRoomReportItem);
-        reportsMenu.add(roomRevenueOverTimeItem);
-        reportsMenu.add(monthlyRevenueReportItem);
-        reportsMenu.add(totalRevenueReportItem);
+        // Create buttons for reports
+        specificRoomButton = createReportButton("Specific Room");
+        roomRevenueOverTimeButton = createReportButton("Monthly Room Revenue");
+        monthlyRevenueButton = createReportButton("Monthly Revenue");
+        totalRevenueButton = createReportButton("Total Revenue");
 
-        // Add "Reports" menu to menu bar
-        menuBar.add(reportsMenu);
+        // Add buttons to the left panel
+        leftPanel.add(specificRoomButton);
+        leftPanel.add(Box.createVerticalStrut(50));
+        leftPanel.add(roomRevenueOverTimeButton);
+        leftPanel.add(Box.createVerticalStrut(50));
+        leftPanel.add(monthlyRevenueButton);
+        leftPanel.add(Box.createVerticalStrut(50));
+        leftPanel.add(totalRevenueButton);
 
-        // Set menu bar to the frame
-        setJMenuBar(menuBar);
+        // Add panels to the right panel
+        JPanel specificRoomPanel = createSpecificRoomPanel();
+        JPanel roomRevenueOverTimePanel = createRoomRevenueOverTimePanel();
+        JPanel monthlyRevenuePanel = createMonthlyRevenuePanel();
+        JPanel totalRevenuePanel = createTotalRevenuePanel();
 
-        // Create panels for different reports
-        specificRoomPanel = createSpecificRoomPanel();
-        roomRevenueOverTimePanel = createRoomRevenueOverTimePanel();
-        monthlyRevenuePanel = createMonthlyRevenuePanel();
-        totalRevenuePanel = createTotalRevenuePanel();
+        rightPanel.add(specificRoomPanel, "Specific Room Report");
+        rightPanel.add(roomRevenueOverTimePanel, "Room Revenue Over Time Report");
+        rightPanel.add(monthlyRevenuePanel, "Monthly Revenue Report");
+        rightPanel.add(totalRevenuePanel, "Total Revenue Report");
 
-        // Event listeners for submenu items
-        specificRoomReportItem.addActionListener(e -> showPanel(specificRoomPanel));
+        // Add panels to the frame
+        add(leftPanel, BorderLayout.WEST);
+        add(rightPanel, BorderLayout.CENTER);
 
-        roomRevenueOverTimeItem.addActionListener(e -> showPanel(roomRevenueOverTimePanel));
+        // Button action listeners to show corresponding report panel
+        specificRoomButton.addActionListener(e -> {
+            CardLayout layout = (CardLayout) rightPanel.getLayout();
+            layout.show(rightPanel, "Specific Room Report");
+        });
 
-        monthlyRevenueReportItem.addActionListener(e -> showPanel(monthlyRevenuePanel));
+        roomRevenueOverTimeButton.addActionListener(e -> {
+            CardLayout layout = (CardLayout) rightPanel.getLayout();
+            layout.show(rightPanel, "Room Revenue Over Time Report");
+        });
 
-        totalRevenueReportItem.addActionListener(e -> showPanel(totalRevenuePanel));
+        monthlyRevenueButton.addActionListener(e -> {
+            CardLayout layout = (CardLayout) rightPanel.getLayout();
+            layout.show(rightPanel, "Monthly Revenue Report");
+        });
+
+        totalRevenueButton.addActionListener(e -> {
+            CardLayout layout = (CardLayout) rightPanel.getLayout();
+            layout.show(rightPanel, "Total Revenue Report");
+        });
 
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(Revenue::new);
+
+
+    private RoundedButton createReportButton(String text) {
+        RoundedButton button = new RoundedButton(text);
+        button.setPreferredSize(new Dimension(280, 50));
+        button.setMaximumSize(new Dimension(280, 50));
+        button.setFont(new Font("Sans-serif", Font.PLAIN, 18));
+        button.setForeground(new Color(255, 255, 255));
+        button.setBackground(new Color(52, 152, 219));
+        button.setFocusable(false);
+        return button;
     }
 
     private JPanel createSpecificRoomPanel() {
@@ -88,14 +121,25 @@ public class Revenue extends JFrame {
         panel.setLayout(new BorderLayout());
 
         // Create input fields and button for specific room report
-        JTextField roomNumberTextField = new JTextField(10);
-        JTextField monthTextField = new JTextField(10);
-        JTextField yearTextField = new JTextField(10);
-        JButton submitButton = new JButton("Submit");
-        submitButton.setFocusable(false);
+        RoundedTextField roomNumberTextField = new RoundedTextField();
+        roomNumberTextField.setPreferredSize(new Dimension(100, 30));
+        roomNumberTextField.setFont(new Font("Sans-serif", Font.BOLD, 15));
+
+        RoundedTextField monthTextField = new RoundedTextField();
+        monthTextField.setPreferredSize(new Dimension(100, 30));
+        monthTextField.setFont(new Font("Sans-serif", Font.BOLD, 15));
+
+        RoundedTextField yearTextField = new RoundedTextField();
+        yearTextField.setPreferredSize(new Dimension(100, 30));
+        yearTextField.setFont(new Font("Sans-serif", Font.BOLD, 15));
+
+        RoundedButton submitButton = new RoundedButton("Submit");
+        submitButton.setPreferredSize(new Dimension(120, 35));
+        submitButton.setMaximumSize(new Dimension(120, 35));
+        submitButton.setForeground(Color.WHITE);
+        submitButton.setBackground(new Color(52, 152, 219));
 
         DefaultTableModel tableModel = new DefaultTableModel();
-
         tableModel.addColumn("Booking ID");
         tableModel.addColumn("Room No");
         tableModel.addColumn("Check In");
@@ -107,37 +151,61 @@ public class Revenue extends JFrame {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component component = super.prepareRenderer(renderer, row, column);
                 if (component instanceof JComponent jComponent) {
-                    jComponent.setFont(new Font("Arial", Font.PLAIN, 16)); // Set the desired font size
+                    jComponent.setFont(new Font("Sans-serif", Font.PLAIN, 16)); // Set the desired font size
                     jComponent.setBackground(Color.WHITE.brighter());
                 }
                 return component;
             }
         };
 
-        table.setRowHeight(24); // Set the desired row height
-        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+        table.setRowHeight(30); // Set the desired row height
+        table.getTableHeader().setFont(new Font("Sans-serif", Font.BOLD, 16));
         table.setFillsViewportHeight(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         JScrollPane scrollPane = new JScrollPane(table);
 
         // Create button for printing report
-        JButton printButton = new JButton("Print Report");
+        RoundedButton printButton = new RoundedButton("Print Report");
+        printButton.setPreferredSize(new Dimension(150, 40));
+        printButton.setMaximumSize(new Dimension(150, 40));
+        printButton.setForeground(Color.WHITE);
+        printButton.setBackground(new Color(52, 152, 219));
 
         // Create panel for input fields and submit button
         JPanel inputPanel = new JPanel(new FlowLayout());
-        inputPanel.add(new JLabel("Room Number:"));
+        JLabel roomLabel = new JLabel("Room Number: ");
+        roomLabel.setFont(new Font("Sans-serif", Font.BOLD, 16));
+        inputPanel.add(roomLabel);
         inputPanel.add(roomNumberTextField);
-        inputPanel.add(new JLabel("Month:"));
+
+        inputPanel.add(Box.createRigidArea(new Dimension(10, 0))); // Add spacing
+
+        JLabel monthLabel = new JLabel("Month:");
+        monthLabel.setFont(new Font("Sans-serif", Font.BOLD, 16));
+        inputPanel.add(monthLabel);
         inputPanel.add(monthTextField);
-        inputPanel.add(new JLabel("Year:"));
+
+        inputPanel.add(Box.createRigidArea(new Dimension(10, 0))); // Add spacing
+
+        JLabel yearLabel = new JLabel("Year:");
+        yearLabel.setFont(new Font("Sans-serif", Font.BOLD, 16));
+        inputPanel.add(yearLabel);
         inputPanel.add(yearTextField);
+
+        inputPanel.add(Box.createRigidArea(new Dimension(20, 0))); // Add spacing
+
         inputPanel.add(submitButton);
+
+        // Create panel for print button
+        JPanel printButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        printButtonPanel.setBackground(Color.WHITE);
+        printButtonPanel.add(printButton);
 
         // Add components to the panel
         panel.add(inputPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(printButton, BorderLayout.SOUTH);
+        panel.add(printButtonPanel, BorderLayout.SOUTH);
 
         // Event listener for submit button
         submitButton.addActionListener(e -> {
@@ -197,50 +265,77 @@ public class Revenue extends JFrame {
         panel.setLayout(new BorderLayout());
 
         // Create input fields and button for specific room report
-        JTextField roomNumberTextField = new JTextField(10);
-        JButton submitButton = new JButton("Submit");
-        submitButton.setFocusable(false);
+        RoundedTextField roomNumberTextField = new RoundedTextField();
+        roomNumberTextField.setPreferredSize(new Dimension(100, 30));
+        roomNumberTextField.setFont(new Font("Sans-serif", Font.BOLD, 15));
+
+        RoundedTextField monthTextField = new RoundedTextField();
+        monthTextField.setPreferredSize(new Dimension(100, 30));
+        monthTextField.setFont(new Font("Sans-serif", Font.BOLD, 15));
+
+        RoundedTextField yearTextField = new RoundedTextField();
+        yearTextField.setPreferredSize(new Dimension(100, 30));
+        yearTextField.setFont(new Font("Sans-serif", Font.BOLD, 15));
+
+        RoundedButton submitButton = new RoundedButton("Submit");
+        submitButton.setPreferredSize(new Dimension(120, 35));
+        submitButton.setMaximumSize(new Dimension(120, 35));
+        submitButton.setForeground(Color.WHITE);
+        submitButton.setBackground(new Color(52, 152, 219));
 
         DefaultTableModel tableModel = new DefaultTableModel();
-
         tableModel.addColumn("Booking ID");
+        tableModel.addColumn("Room No");
         tableModel.addColumn("Check In");
         tableModel.addColumn("Check Out");
         tableModel.addColumn("Revenue");
 
         JTable table = new JTable(tableModel) {
-
             @Override
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component component = super.prepareRenderer(renderer, row, column);
                 if (component instanceof JComponent jComponent) {
-                    jComponent.setFont(new Font("Arial", Font.PLAIN, 16)); // Set the desired font size
+                    jComponent.setFont(new Font("Sans-serif", Font.PLAIN, 16)); // Set the desired font size
                     jComponent.setBackground(Color.WHITE.brighter());
                 }
                 return component;
             }
         };
 
-        table.setRowHeight(24); // Set the desired row height
-        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+        table.setRowHeight(30); // Set the desired row height
+        table.getTableHeader().setFont(new Font("Sans-serif", Font.BOLD, 16));
         table.setFillsViewportHeight(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         JScrollPane scrollPane = new JScrollPane(table);
 
         // Create button for printing report
-        JButton printButton = new JButton("Print Report");
+        RoundedButton printButton = new RoundedButton("Print Report");
+        printButton.setPreferredSize(new Dimension(150, 40));
+        printButton.setMaximumSize(new Dimension(150, 40));
+        printButton.setForeground(Color.WHITE);
+        printButton.setBackground(new Color(52, 152, 219));
 
         // Create panel for input fields and submit button
         JPanel inputPanel = new JPanel(new FlowLayout());
-        inputPanel.add(new JLabel("Room Number:"));
+        JLabel roomLabel = new JLabel("Room Number: ");
+        roomLabel.setFont(new Font("Sans-serif", Font.BOLD, 16));
+        inputPanel.add(roomLabel);
         inputPanel.add(roomNumberTextField);
+
+        inputPanel.add(Box.createRigidArea(new Dimension(20, 0))); // Add spacing
+
         inputPanel.add(submitButton);
+
+        // Create panel for print button
+        JPanel printButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        printButtonPanel.setBackground(Color.WHITE);
+        printButtonPanel.add(printButton);
 
         // Add components to the panel
         panel.add(inputPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(printButton, BorderLayout.SOUTH);
+        panel.add(printButtonPanel, BorderLayout.SOUTH);
 
         // Event listener for submit button
         submitButton.addActionListener(e -> {
@@ -248,7 +343,6 @@ public class Revenue extends JFrame {
 
             // Call the stored procedure and retrieve the data
             try {
-                tableModel.setRowCount(0);
                 DatabaseConnection db = new DatabaseConnection();
                 CallableStatement statement = db.connection.prepareCall("{CALL get_room_revenue_over_time_report(?, ?)}");
 
@@ -258,7 +352,9 @@ public class Revenue extends JFrame {
                 // Execute the stored procedure
                 statement.execute();
                 boolean dataExists = statement.getBoolean(2);
+
                 if (dataExists) {
+                    tableModel.setRowCount(0);
                     ResultSet resultSet;
                     // Execute the stored procedure
                     resultSet = statement.executeQuery();
@@ -266,16 +362,17 @@ public class Revenue extends JFrame {
                     // Populate the table with data
                     while (resultSet.next()) {
                         int bookingID = resultSet.getInt("booking_id");
+                        int roomNo = resultSet.getInt("room_no");
                         String checkInDate = resultSet.getString("start_date");
                         String checkOutDate = resultSet.getString("end_date");
                         double revenue = resultSet.getDouble("price");
 
                         // Add the row data to the table model
-                        tableModel.addRow(new Object[]{bookingID, checkInDate, checkOutDate, revenue});
+                        tableModel.addRow(new Object[]{bookingID, roomNo, checkInDate, checkOutDate, revenue});
                     }
                     resultSet.close();
 
-                }else{
+                } else {
                     JOptionPane.showMessageDialog(null, "No data found");
                 }
             } catch (SQLException ex) {
@@ -294,10 +391,25 @@ public class Revenue extends JFrame {
         panel.setLayout(new BorderLayout());
 
         // Create input fields and button for specific room report
+        RoundedTextField roomNumberTextField = new RoundedTextField();
+        roomNumberTextField.setPreferredSize(new Dimension(100, 30));
+        roomNumberTextField.setFont(new Font("Sans-serif", Font.BOLD, 15));
 
+        RoundedTextField monthTextField = new RoundedTextField();
+        monthTextField.setPreferredSize(new Dimension(100, 30));
+        monthTextField.setFont(new Font("Sans-serif", Font.BOLD, 15));
+
+        RoundedTextField yearTextField = new RoundedTextField();
+        yearTextField.setPreferredSize(new Dimension(100, 30));
+        yearTextField.setFont(new Font("Sans-serif", Font.BOLD, 15));
+
+        RoundedButton submitButton = new RoundedButton("Submit");
+        submitButton.setPreferredSize(new Dimension(120, 35));
+        submitButton.setMaximumSize(new Dimension(120, 35));
+        submitButton.setForeground(Color.WHITE);
+        submitButton.setBackground(new Color(52, 152, 219));
 
         DefaultTableModel tableModel = new DefaultTableModel();
-
         tableModel.addColumn("Booking ID");
         tableModel.addColumn("Room No");
         tableModel.addColumn("Check In");
@@ -309,47 +421,48 @@ public class Revenue extends JFrame {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component component = super.prepareRenderer(renderer, row, column);
                 if (component instanceof JComponent jComponent) {
-                    jComponent.setFont(new Font("Arial", Font.PLAIN, 16)); // Set the desired font size
+                    jComponent.setFont(new Font("Sans-serif", Font.PLAIN, 16)); // Set the desired font size
                     jComponent.setBackground(Color.WHITE.brighter());
                 }
                 return component;
             }
         };
 
-        table.setRowHeight(24); // Set the desired row height
-        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+        table.setRowHeight(30); // Set the desired row height
+        table.getTableHeader().setFont(new Font("Sans-serif", Font.BOLD, 16));
         table.setFillsViewportHeight(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         JScrollPane scrollPane = new JScrollPane(table);
 
         // Create button for printing report
-        JButton printButton = new JButton("Print Report");
+        RoundedButton printButton = new RoundedButton("Print Report");
+        printButton.setPreferredSize(new Dimension(150, 40));
+        printButton.setMaximumSize(new Dimension(150, 40));
+        printButton.setForeground(Color.WHITE);
+        printButton.setBackground(new Color(52, 152, 219));
 
-        // Create panel for input fields and submit button
-        JPanel inputPanel = new JPanel(new FlowLayout());
-
+        // Create panel for print button
+        JPanel printButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        printButtonPanel.setBackground(Color.WHITE);
+        printButtonPanel.add(printButton);
 
         // Add components to the panel
-        panel.add(inputPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(printButton, BorderLayout.SOUTH);
-
-        // Event listener for submit button
-
+        panel.add(printButtonPanel, BorderLayout.SOUTH);
 
         // Call the stored procedure and retrieve the data
         try {
             DatabaseConnection db = new DatabaseConnection();
             CallableStatement statement = db.connection.prepareCall("{CALL get_monthly_revenue_report(?)}");
 
-            // Set the input parameters
-
             statement.registerOutParameter(1, Types.BOOLEAN);
             // Execute the stored procedure
             statement.execute();
             boolean dataExists = statement.getBoolean(1);
+
             if (dataExists) {
+                tableModel.setRowCount(0);
                 ResultSet resultSet;
                 // Execute the stored procedure
                 resultSet = statement.executeQuery();
@@ -367,6 +480,8 @@ public class Revenue extends JFrame {
                 }
                 resultSet.close();
 
+            } else {
+                JOptionPane.showMessageDialog(null, "No data found");
             }
         } catch (SQLException ex) {
             // Handle any database errors
@@ -382,8 +497,26 @@ public class Revenue extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
 
-        DefaultTableModel tableModel = new DefaultTableModel();
+        // Create input fields and button for specific room report
+        RoundedTextField roomNumberTextField = new RoundedTextField();
+        roomNumberTextField.setPreferredSize(new Dimension(100, 30));
+        roomNumberTextField.setFont(new Font("Sans-serif", Font.BOLD, 15));
 
+        RoundedTextField monthTextField = new RoundedTextField();
+        monthTextField.setPreferredSize(new Dimension(100, 30));
+        monthTextField.setFont(new Font("Sans-serif", Font.BOLD, 15));
+
+        RoundedTextField yearTextField = new RoundedTextField();
+        yearTextField.setPreferredSize(new Dimension(100, 30));
+        yearTextField.setFont(new Font("Sans-serif", Font.BOLD, 15));
+
+        RoundedButton submitButton = new RoundedButton("Submit");
+        submitButton.setPreferredSize(new Dimension(120, 35));
+        submitButton.setMaximumSize(new Dimension(120, 35));
+        submitButton.setForeground(Color.WHITE);
+        submitButton.setBackground(new Color(52, 152, 219));
+
+        DefaultTableModel tableModel = new DefaultTableModel();
         tableModel.addColumn("Booking ID");
         tableModel.addColumn("Room No");
         tableModel.addColumn("Check In");
@@ -395,44 +528,48 @@ public class Revenue extends JFrame {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component component = super.prepareRenderer(renderer, row, column);
                 if (component instanceof JComponent jComponent) {
-                    jComponent.setFont(new Font("Arial", Font.PLAIN, 16)); // Set the desired font size
+                    jComponent.setFont(new Font("Sans-serif", Font.PLAIN, 16)); // Set the desired font size
                     jComponent.setBackground(Color.WHITE.brighter());
                 }
                 return component;
             }
         };
 
-        table.setRowHeight(24); // Set the desired row height
-        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+        table.setRowHeight(30); // Set the desired row height
+        table.getTableHeader().setFont(new Font("Sans-serif", Font.BOLD, 16));
         table.setFillsViewportHeight(true);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         JScrollPane scrollPane = new JScrollPane(table);
 
         // Create button for printing report
-        JButton printButton = new JButton("Print Report");
+        RoundedButton printButton = new RoundedButton("Print Report");
+        printButton.setPreferredSize(new Dimension(150, 40));
+        printButton.setMaximumSize(new Dimension(150, 40));
+        printButton.setForeground(Color.WHITE);
+        printButton.setBackground(new Color(52, 152, 219));
 
-        // Create panel for input fields and submit button
-        JPanel inputPanel = new JPanel(new FlowLayout());
-
+        // Create panel for print button
+        JPanel printButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        printButtonPanel.setBackground(Color.WHITE);
+        printButtonPanel.add(printButton);
 
         // Add components to the panel
-        panel.add(inputPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(printButton, BorderLayout.SOUTH);
-
+        panel.add(printButtonPanel, BorderLayout.SOUTH);
 
         // Call the stored procedure and retrieve the data
         try {
             DatabaseConnection db = new DatabaseConnection();
             CallableStatement statement = db.connection.prepareCall("{CALL get_total_revenue_report(?)}");
 
-
             statement.registerOutParameter(1, Types.BOOLEAN);
             // Execute the stored procedure
             statement.execute();
             boolean dataExists = statement.getBoolean(1);
+
             if (dataExists) {
+                tableModel.setRowCount(0);
                 ResultSet resultSet;
                 // Execute the stored procedure
                 resultSet = statement.executeQuery();
@@ -450,6 +587,8 @@ public class Revenue extends JFrame {
                 }
                 resultSet.close();
 
+            } else {
+                JOptionPane.showMessageDialog(null, "No data found");
             }
         } catch (SQLException ex) {
             // Handle any database errors
@@ -551,10 +690,18 @@ public class Revenue extends JFrame {
         return panel;
     }
 
-    private void showPanel(JPanel panel) {
-        getContentPane().removeAll();
-        getContentPane().add(panel, BorderLayout.CENTER);
-        revalidate();
-        repaint();
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        CardLayout layout = (CardLayout) rightPanel.getLayout();
+
+        if (e.getSource() == specificRoomButton) {
+            layout.show(rightPanel, "Specific Room Report");
+        } else if (e.getSource() == roomRevenueOverTimeButton) {
+            layout.show(rightPanel, "Room Revenue Over Time Report");
+        } else if (e.getSource() == monthlyRevenueButton) {
+            layout.show(rightPanel, "Monthly Revenue Report");
+        } else if (e.getSource() == totalRevenueButton) {
+            layout.show(rightPanel, "Total Revenue Report");
+        }
     }
 }
