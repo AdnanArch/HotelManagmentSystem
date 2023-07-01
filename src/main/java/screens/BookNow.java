@@ -3,9 +3,11 @@ package screens;
 import com.toedter.calendar.JDateChooser;
 import com.toedter.calendar.JTextFieldDateEditor;
 import components.LoggedIn;
+import components.ProgressLoader;
 import components.RoundedButton;
 import components.RoundedTextField;
 import connection.DatabaseConnection;
+import email.EmailSender;
 
 import javax.swing.*;
 import java.awt.*;
@@ -212,7 +214,12 @@ public class BookNow extends JFrame implements ActionListener {
                 } else {
                     int userSelection = JOptionPane.showConfirmDialog(this, "Your Total bill for booking is " + roomPrice + "\nDo you want to proceed?");
                     if (userSelection == JOptionPane.YES_OPTION) {
-                        insertBookingData(roomNo, customerID, startDate, endDate, roomPrice);
+                        try {
+                            sendBookingRequestEmailToAdminAndUser(roomNo, customerID, startDate, endDate, roomPrice);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+
                     } else {
                         JOptionPane.showMessageDialog(this, "Ok sir thanks");
                     }
@@ -249,6 +256,50 @@ public class BookNow extends JFrame implements ActionListener {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void sendBookingRequestEmailToAdminAndUser(int roomNo, int customerID, Date startDate, Date endDate, double rent) throws SQLException {
+        // set the email contents to send notification to admin
+        String subject = "Room Booking Request";
+        String messageForAdmin = "The customer with Name " + LoggedIn.getCustomerName() + " and having customer ID " + LoggedIn.getCustomerID() + " has requested for the booking of room no " + roomNo;
+        String fromAdmin = "adnaninreallife@gmail.com";
+        String adminTo = "adnaninreallife@gmail.com";
+
+        // set the email contents to send notification to customer
+        String messageForCustomer = "You have have requested for the booking of room no " + roomNo;
+        String toCustomer = LoggedIn.getCustomerEmail();
+
+        // open the progress loader
+        ProgressLoader progressLoader = new ProgressLoader();
+        JDialog loadingDialog = progressLoader.createLoadingDialog("Please wait the booking request is being sent");
+
+        // start a thread
+        Thread bookingRequestThread = new Thread(() ->{
+            try{
+                EmailSender emailSender = new EmailSender();
+                boolean adminEmailSentStatus = emailSender.sendEmail(adminTo, fromAdmin, subject, messageForAdmin);
+                boolean customerEmailSentStatus = emailSender.sendEmail(toCustomer, fromAdmin, subject, messageForCustomer);
+                if(adminEmailSentStatus && customerEmailSentStatus){
+                    SwingUtilities.invokeLater(()->{
+                        loadingDialog.dispose();
+                        insertBookingData(roomNo, customerID, startDate, endDate, rent);
+                    });
+                }else{
+                    SwingUtilities.invokeLater(()->{
+                        loadingDialog.dispose();
+                        showErrorMessage("Use stable internet connection. Try again.");
+                    });
+                }
+            }catch (Exception e){
+                showErrorMessage(e.getMessage());
+            }
+        });
+
+        bookingRequestThread.start();
+    }
+
+    private void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
 }

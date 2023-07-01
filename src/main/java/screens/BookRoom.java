@@ -21,10 +21,6 @@ public class BookRoom extends JFrame {
 
     FetchRoomDetails fetchRoomDetails = new FetchRoomDetails();
 
-    public  DefaultTableModel getTableModel() {
-        return tableModel;
-    }
-
     BookRoom() {
 
         setTitle("Room Details");

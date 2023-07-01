@@ -1,7 +1,10 @@
 package screens;
 
+import components.LoggedIn;
+import components.ProgressLoader;
 import components.RoundedTextField;
 import connection.DatabaseConnection;
+import email.EmailSender;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -101,10 +104,6 @@ public class CustomerBookings extends JFrame {
         fetchAndDisplayCustomerBookings();
 
         setVisible(true);
-    }
-
-    public static void main(String[] args) {
-//         Example usage: CustomerBookings customerBookings = new CustomerBookings(customerId);
     }
 
     private void refreshTableData() {
@@ -213,8 +212,11 @@ public class CustomerBookings extends JFrame {
 
                     if (actionCommand.equals("Cancel")) {
                         String bookingStatus = "Cancel Booking";
-                        String roomStatus = "Available";
-                        updateRoomAndBookingStatus(roomNo, bookingStatus, roomStatus, bookingID);
+                        try {
+                            sendCancelBookingRequestToAdminAndCustomer(roomNo, bookingStatus, bookingID);
+                        } catch (SQLException ex) {
+                            handleSQLException(ex);
+                        }
                     } else if (actionCommand.equals("Checkout")) {
                         // Perform the checkout action here
                         performCheckout(bookingID, selectedRow);
@@ -223,17 +225,51 @@ public class CustomerBookings extends JFrame {
             });
         }
 
-        private void updateRoomAndBookingStatus(int roomNo, String bookingStatus, String roomStatus, int bookingID) {
+        private void sendCancelBookingRequestToAdminAndCustomer(int roomNo, String bookingStatus, int bookingID) throws SQLException {
+            String from = "adnaninreallife@gmail.com";
+            String toAdmin = "adnaninreallife@gmail.com";
+            String subject = "Booking Request";
+            String adminMessage = LoggedIn.getCustomerName() + " having customer ID " + LoggedIn.getCustomerID() + " has sent a request to cancel the booking of room No " + roomNo + " against Booking Id " + bookingID;
+
+            String toCustomer = LoggedIn.getCustomerEmail();
+            String customerMessage = "Dear "+ LoggedIn.getCustomerName() + ",\nYour request to cancel the booking of room no " + roomNo + " against booking id " + bookingID + " has been sent.";
+
+            ProgressLoader progressLoader = new ProgressLoader();
+            JDialog loadingDialog = progressLoader.createLoadingDialog("Please wait your request is being sent.");
+
+            Thread cancelBookingThread = new Thread(() -> {
+                try{
+                    EmailSender emailSender = new EmailSender();
+                    boolean adminEmailSentStatus = emailSender.sendEmail(toAdmin, from, subject, adminMessage);
+                    boolean customerEmailSentStatus = emailSender.sendEmail(toCustomer, from, subject, customerMessage);
+                    if(adminEmailSentStatus && customerEmailSentStatus){
+                        SwingUtilities.invokeLater(()->{
+                            loadingDialog.dispose();
+                            updateRoomAndBookingStatus(bookingStatus, bookingID);
+                            JOptionPane.showMessageDialog(this.getComponent(), "Cancel booking request sent successfully.");
+                        });
+                    }else{
+                        SwingUtilities.invokeLater(()->{
+                            loadingDialog.dispose();
+                            showErrorMessage("Use stable internet connection. Try again.");
+                        });
+                    }
+                }catch (Exception e){
+                    showErrorMessage(e.getMessage());
+                }
+            });
+
+            cancelBookingThread.start();
+        }
+        private void showErrorMessage(String message) {
+            JOptionPane.showMessageDialog(this.getComponent(), message, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        private void updateRoomAndBookingStatus(String bookingStatus, int bookingID) {
             try {
                 CallableStatement statement = db.connection.prepareCall("{CALL sp_update_booking_status(?, ?)}");
                 statement.setInt(1, bookingID);
                 statement.setString(2, bookingStatus);
-                statement.executeUpdate();
-                statement.close();
-
-                statement = db.connection.prepareCall("{CALL sp_update_room_status(?, ?)}");
-                statement.setInt(1, roomNo);
-                statement.setString(2, roomStatus);
                 statement.executeUpdate();
                 statement.close();
 

@@ -1,7 +1,9 @@
 package screens;
 
+import components.ProgressLoader;
 import components.RoundedTextField;
 import connection.DatabaseConnection;
+import email.EmailSender;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -10,6 +12,7 @@ import java.awt.*;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 public class Bookings extends JFrame {
     private final JTable table;
@@ -17,6 +20,8 @@ public class Bookings extends JFrame {
     private final RoundedTextField searchField;
 
     private final DatabaseConnection db = new DatabaseConnection();
+
+    private static String customerEmail;
 
     Bookings() {
         setTitle("Room Details");
@@ -216,62 +221,65 @@ public class Bookings extends JFrame {
                     String actionCommand = button.getActionCommand();
                     int bookingID = (int) table.getValueAt(selectedRow, 0);
                     int roomNo = (int) table.getValueAt(selectedRow, 3);
-
+                    String checkBookingStatus = (String) tableModel.getValueAt(selectedRow, 9);
                     // Perform the desired action based on the button clicked
                     if (actionCommand.equals("Set Status")) {
-                        // Show a dialog box to choose the booking status
-                        String[] options = {"Accept", "Cancel"};
-                        JComboBox<String> statusComboBox = new JComboBox<>(options);
+                        switch (checkBookingStatus) {
+                            case "Booked", "Cancelled", "Completed" -> showErrorMessage("You can not set the status");
+                            case "Is Requested" -> {
+                                // Show a dialog box to choose the booking status
+                                String[] options = {"Accept", "Cancel"};
+                                JComboBox<String> statusComboBox = new JComboBox<>(options);
 
-                        JOptionPane.showOptionDialog(Bookings.this, statusComboBox, "Select Booking Status", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, options[0]);
+                                JOptionPane.showOptionDialog(Bookings.this, statusComboBox, "Select Booking Status", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, options[0]);
 
-                        // Retrieve the selected option value
-                        String selectedOption = (String) statusComboBox.getSelectedItem();
+                                // Retrieve the selected option value
+                                String selectedOption = (String) statusComboBox.getSelectedItem();
 
-                        // Perform the desired action based on the selected option
-                        assert selectedOption != null;
-                        if (selectedOption.equals("Accept")) {
-                            // Accepted status selected
-                            String bookingStatus = "Booked";
-                            String roomStatus = "Occupied";
-                            // TODO: Update the booking status and room status in the database for the selected row
-                            // using the row value (row variable) and the values (bookingStatus and roomStatus) obtained here
-                            updateRoomAndBookingStatus(roomNo, bookingStatus, roomStatus, bookingID);
-                        } else if (selectedOption.equals("Cancel")) {
-                            // Cancel status selected
-                            String bookingStatus = "Cancelled";
-                            String roomStatus = "Available";
-                            // TODO: Update the booking status and room status in the database for the selected row
-                            // using the row value (row variable) and the values (bookingStatus and roomStatus) obtained here
-                            updateRoomAndBookingStatus(roomNo, bookingStatus, roomStatus, bookingID);
+                                // Perform the desired action based on the selected option
+                                assert selectedOption != null;
+                                if (selectedOption.equals("Accept")) {
+                                    // Accepted status selected
+                                    String bookingStatus = "Booked";
+                                    String roomStatus = "Occupied";
+                                    sendEmailToCustomerAndUpdateRoomAndBookingStatus(checkBookingStatus, roomNo, bookingStatus, roomStatus, bookingID);
+                                } else if (selectedOption.equals("Cancel")) {
+                                    // Cancel status selected
+                                    String bookingStatus = "Cancelled";
+                                    String roomStatus = "Available";
+                                    sendEmailToCustomerAndUpdateRoomAndBookingStatus(checkBookingStatus, roomNo, bookingStatus, roomStatus, bookingID);
+                                }
+                            }
+                            case "Cancel Booking" -> {
+                                // Show a dialog box to choose the booking status
+                                String[] options = {"Accept", "Cancel"};
+                                JComboBox<String> statusComboBox = new JComboBox<>(options);
+
+                                JOptionPane.showOptionDialog(Bookings.this, statusComboBox, "Select Booking Status", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, options[0]);
+
+                                // Retrieve the selected option value
+                                String selectedOption = (String) statusComboBox.getSelectedItem();
+
+                                // Perform the desired action based on the selected option
+                                assert selectedOption != null;
+                                if (selectedOption.equals("Accept")) {
+                                    // Accepted status selected
+                                    String bookingStatus = "Cancelled";
+                                    String roomStatus = "Available";
+                                    sendEmailToCustomerAndUpdateRoomAndBookingStatus(checkBookingStatus, roomNo, bookingStatus, roomStatus, bookingID);
+                                } else if (selectedOption.equals("Cancel")) {
+                                    // Cancel status selected
+                                    String bookingStatus = "Booked";
+                                    String roomStatus = "Occupied";
+                                    sendEmailToCustomerAndUpdateRoomAndBookingStatus(checkBookingStatus, roomNo, bookingStatus, roomStatus, bookingID);
+                                }
+                            }
                         }
 
                     }
                 }
             });
         }
-
-        private void updateRoomAndBookingStatus(int roomNo, String bookingStatus, String roomStatus, int bookingID) {
-            try {
-                CallableStatement statement = db.connection.prepareCall("{CALL sp_update_booking_status(?, ?)}");
-                statement.setInt(1, bookingID);
-                statement.setString(2, bookingStatus);
-                statement.executeUpdate();
-                statement.close();
-
-                statement = db.connection.prepareCall("{CALL sp_update_room_status(?, ?)}");
-                statement.setInt(1, roomNo);
-                statement.setString(2, roomStatus);
-                statement.executeUpdate();
-                statement.close();
-
-                // Update the table data
-                fetchAndDisplayBookingsDetails();
-            } catch (SQLException e) {
-                handleSQLException(e);
-            }
-        }
-
 
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             buttonText = (value == null) ? "" : value.toString();
@@ -282,5 +290,90 @@ public class Bookings extends JFrame {
         public Object getCellEditorValue() {
             return buttonText;
         }
+    }
+
+    private void updateRoomAndBookingStatus(int roomNo, String bookingStatus, String roomStatus, int bookingID) {
+        try {
+            CallableStatement statement = db.connection.prepareCall("{CALL sp_update_booking_status(?, ?)}");
+            statement.setInt(1, bookingID);
+            statement.setString(2, bookingStatus);
+            statement.executeUpdate();
+            statement.close();
+
+            statement = db.connection.prepareCall("{CALL sp_update_room_status(?, ?)}");
+            statement.setInt(1, roomNo);
+            statement.setString(2, roomStatus);
+            statement.executeUpdate();
+            statement.close();
+
+            // Update the table data
+            fetchAndDisplayBookingsDetails();
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+    }
+
+    private void sendEmailToCustomerAndUpdateRoomAndBookingStatus(String checkBookingStatus, int roomNo, String bookingStatus, String roomStatus, int bookingID){
+        String subject = "Booking Request Status";
+        String from = "adnaninreallife@gmail.com";
+        String to = getCustomerEmailByBookingID(bookingID);
+        String message;
+
+        if(checkBookingStatus.equals("Is Requested")){
+            if (bookingStatus.equals("Booked")){
+                message = "Congratulations,\nYour request of booking the room against booking id " + bookingID + " has been accepted.";
+            } else{
+                message = "Sorry sir,\nYour request of booking the room against booking id " + bookingID + " has been cancelled.";
+            }
+        }else{
+            if (bookingStatus.equals("Cancelled")){
+                message = "Congratulations,\nYour request of cancelling the room booking against booking id " + bookingID + " has been accepted.";
+            } else{
+                message = "Sorry sir,\nYour request of cancelling the room booking against booking id " + bookingID + " has been cancelled.";
+            }
+        }
+
+
+        ProgressLoader progressLoader = new ProgressLoader();
+        JDialog loadingDialog = progressLoader.createLoadingDialog("Please wait the status is being updated.");
+
+        String finalMessage = message;
+
+        Thread bookingRequestThread = new Thread(()->{
+            EmailSender emailSender = new EmailSender();
+            boolean sentStatus = emailSender.sendEmail(to, from, subject, finalMessage);
+            if (sentStatus){
+                SwingUtilities.invokeLater(()->{
+                    loadingDialog.dispose();
+                    updateRoomAndBookingStatus(roomNo, bookingStatus, roomStatus, bookingID);
+                    JOptionPane.showMessageDialog(this, "Status updated successfully");
+                });
+            }else{
+                SwingUtilities.invokeLater(()->{
+                    loadingDialog.dispose();
+                    showErrorMessage("Use stable internet connection. Try again.");
+                });
+            }
+        });
+
+        bookingRequestThread.start();
+    }
+
+    private String getCustomerEmailByBookingID(int bookingID){
+        try{
+            CallableStatement statement = db.connection.prepareCall("{CALL sp_get_customer_email_by_booking_id(?, ?)}");
+            statement.setInt(1, bookingID);
+            statement.registerOutParameter(2, Types.VARCHAR);
+            statement.execute();
+            customerEmail = statement.getString(2);
+            statement.close();
+        }catch (SQLException e){
+            handleSQLException(e);
+        }
+        return customerEmail;
+    }
+
+    private void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
