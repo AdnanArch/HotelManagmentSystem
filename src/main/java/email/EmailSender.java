@@ -14,11 +14,8 @@ public class EmailSender {
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", true);
         properties.put("mail.smtp.starttls.enable", true);
-        properties.put("mail.smtp.port", "587");
-        properties.put("mail.smtp.host", "smtp.gmail.com");
 
-        String username = "adnaninreallife";
-        String password = "qhjjjaekohlyelud";
+        //set your own SMTP server properties and your own username and password here.
 
 
         //session
