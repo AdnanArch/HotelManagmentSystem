@@ -228,8 +228,8 @@ public class SignUp extends JFrame implements ActionListener {
                                 if (otpStatus) {
                                     SwingUtilities.invokeLater(() -> {
                                         loadingDialog.dispose(); // Close the loading dialog
-                                        OTPInputDialog otpInputDialog = new OTPInputDialog();
-                                        String enteredOTP = otpInputDialog.showOTPInputDialog();
+                                        InputDialog otpInputDialog = new InputDialog();
+                                        String enteredOTP = otpInputDialog.showInputDialog("Enter the OTP sent to your email:");
                                         if (!enteredOTP.isEmpty() && enteredOTP.equals(generatedOTP)) {
                                             registerCustomer(firstNameText, lastNameText, userNameText, passwordText, emailText, addressText, phoneText, emergencyContactText);
                                         } else if (!enteredOTP.isEmpty()) {

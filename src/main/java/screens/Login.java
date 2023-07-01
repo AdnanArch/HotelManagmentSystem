@@ -60,6 +60,31 @@ public class Login extends JFrame implements ActionListener {
         passwordTextField.setFont(new Font("Arial", Font.PLAIN, 17));
         add(passwordTextField);
 
+        JLabel forgetPasswordLabel = new JLabel("<html><i>Forget Password?</i></html>");
+        forgetPasswordLabel.setBounds(530, 420, 200, 30);
+        forgetPasswordLabel.setForeground(new Color(218, 215, 205));
+        forgetPasswordLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+
+        forgetPasswordLabel.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                forgetPasswordLabel.setText("<html><u><i>Forget Password?</i></u></html>");
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                forgetPasswordLabel.setText("<html><i>Forget Password?</i></html>");
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                ForgotPassword forgotPassword = new ForgotPassword();
+                dispose();
+                forgotPassword.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            }
+        });
+
+        add(forgetPasswordLabel);
+
         loginButton = new RoundedButton("Login");
         loginButton.setBackground(new Color(218, 215, 205));
         loginButton.setBounds(495, 465, 110, 40);
@@ -116,6 +141,10 @@ public class Login extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setVisible(true);
         setResizable(false);
+    }
+
+    public static void main(String[] args) {
+        new Login();
     }
 
     @Override

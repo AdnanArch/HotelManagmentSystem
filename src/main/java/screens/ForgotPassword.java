@@ -1,13 +1,12 @@
 package screens;
 
-import components.OTPInputDialog;
+import components.InputDialog;
 import components.ProgressLoader;
 import components.RoundedButton;
 import components.RoundedTextField;
 import connection.DatabaseConnection;
 import email.EmailSender;
 import email.OTPGenerator;
-import security.Validator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,30 +28,41 @@ public class ForgotPassword extends JFrame implements ActionListener {
         super("Forgot Password");
 
         JLabel titleLabel = new JLabel("Forgot Password");
-        titleLabel.setBounds(340, 100, 400, 100);
+        titleLabel.setBounds(145, 30, 400, 100);
         titleLabel.setForeground(Color.WHITE.brighter());
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 35));
+        titleLabel.setFont(new Font("Sans-serif", Font.BOLD, 35));
         add(titleLabel);
 
-        JLabel emailLabel = new JLabel("Email");
-        emailLabel.setBounds(370, 250, 120, 30);
-        emailLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setBounds(170, 150, 130, 30);
+        emailLabel.setFont(new Font("Sans-serif", Font.BOLD, 18));
         emailLabel.setForeground(Color.WHITE.brighter());
         add(emailLabel);
 
         emailTextField = new RoundedTextField();
-        emailTextField.setBounds(370, 280, 280, 40);
+        emailTextField.setBounds(170, 180, 280, 45);
         emailTextField.setForeground(Color.BLACK);
-        emailTextField.setFont(new Font("Arial", Font.PLAIN, 17));
+        emailTextField.setFont(new Font("Sans-serif", Font.PLAIN, 17));
         add(emailTextField);
 
-        resetButton = new RoundedButton("Reset Password");
+        resetButton = new RoundedButton("Reset");
         resetButton.setBackground(new Color(218, 215, 205));
-        resetButton.setBounds(470, 335, 180, 40);
-        resetButton.setFont(new Font("Arial", Font.BOLD, 16));
+        resetButton.setBounds(350, 235, 100, 40);
+        resetButton.setFont(new Font("Sans-serif", Font.BOLD, 16));
         resetButton.addActionListener(this);
         resetButton.setFocusable(false);
         add(resetButton);
+
+        RoundedButton loginButton = new RoundedButton("Login");
+        loginButton.setBackground(new Color(218, 215, 205));
+        loginButton.setBounds(25, 310, 100, 40);
+        loginButton.setFont(new Font("Sans-serif", Font.BOLD, 16));
+        loginButton.addActionListener(actionEvent -> {
+            new Login();
+            dispose();
+        });
+        loginButton.setFocusable(false);
+        add(loginButton);
 
         db = new DatabaseConnection();
         otpGenerator = new OTPGenerator();
@@ -60,7 +70,7 @@ public class ForgotPassword extends JFrame implements ActionListener {
 
         setLayout(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(1024, 600);
+        setSize(600, 400);
         getContentPane().setBackground(new Color(12, 55, 64));
         setLocationRelativeTo(null);
         setVisible(true);
@@ -93,57 +103,41 @@ public class ForgotPassword extends JFrame implements ActionListener {
         String from = "adnaninreallife@gmail.com";
 
         ProgressLoader progressLoader = new ProgressLoader();
-        JDialog loadingDialog = progressLoader.createLoadingDialog("Sending OTP...");
-        loadingDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        JDialog loadingDialog = progressLoader.createLoadingDialog("Please wait while the OTP is being sent.");
 
-        SwingWorker<Void, Void> worker = new SwingWorker<>() {
-            @Override
-            protected Void doInBackground() {
+        Thread otpThread = new Thread(() ->{
+            try{
                 // Perform the email sending task
-                boolean emailSent = emailSender.sendEmail(userEmail, from, subject, message);
-
-                if (emailSent) {
-                    OTPInputDialog otpInputDialog = new OTPInputDialog();
-                    String enteredOTP = otpInputDialog.showOTPInputDialog();
-
-                    if (!enteredOTP.isEmpty()) {
-                        verifyOTP(enteredOTP);
-                    } else {
-                        showErrorMessage("Invalid OTP. Please try again.");
-                    }
-                } else {
-                    showErrorMessage("Failed to send OTP. Please try again.");
+                boolean otpStatus = emailSender.sendEmail(userEmail, from, subject, message);
+                if (otpStatus){
+                    SwingUtilities.invokeLater(()->{
+                        loadingDialog.dispose(); // Close the loading dialog
+                        InputDialog otpInputDialog = new InputDialog();
+                        String enteredOTP = otpInputDialog.showInputDialog("Enter the OTP sent to your email:");
+                        if (!enteredOTP.isEmpty() && enteredOTP.equals(otp)) {
+                            resetPassword(userEmail);
+                        } else if (!enteredOTP.isEmpty()) {
+                            showErrorMessage("Incorrect OTP. Please try again.");
+                        }
+                    });
+                }else{
+                    SwingUtilities.invokeLater(() -> {
+                        loadingDialog.dispose();
+                        showErrorMessage("Use stable internet connection. Try again.");
+                    });
                 }
-
-                return null;
+            }catch (Exception e){
+                showErrorMessage(e.getMessage());
             }
+        });
 
-            @Override
-            protected void done() {
-                // Close the loading dialog
-                loadingDialog.dispose();
-            }
-        };
-
-        worker.execute();
+        otpThread.start();
     }
 
-
-    private void verifyOTP(String enteredOTP) {
-        String generatedOTP = otpGenerator.getGeneratedOTP();
-
-        if (enteredOTP.equals(generatedOTP)) {
-            ProgressLoader progressLoader = new ProgressLoader();
-            progressLoader.createLoadingDialog("");
-            resetPassword(userEmail);
-        } else {
-            showErrorMessage("Invalid OTP. Please try again.");
-        }
-    }
 
     private void resetPassword(String userEmail) {
-        String newPassword = JOptionPane.showInputDialog(this, "Enter new password");
         try {
+            String newPassword = new InputDialog().showInputDialog("Enter new password:");
             if (newPassword != null && !newPassword.isEmpty()) {
                 CallableStatement statement = db.connection.prepareCall("{call sp_reset_password(?, ?)}");
 
@@ -153,6 +147,7 @@ public class ForgotPassword extends JFrame implements ActionListener {
 
                 JOptionPane.showMessageDialog(this, "Password reset successful.");
                 dispose();
+                new Login();
             } else {
                 showErrorMessage("Invalid password. Please try again.");
             }

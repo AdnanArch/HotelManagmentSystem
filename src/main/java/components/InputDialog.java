@@ -3,10 +3,10 @@ package components;
 import javax.swing.*;
 import java.awt.*;
 
-public class OTPInputDialog extends Component {
-    public String showOTPInputDialog() {
+public class InputDialog extends Component {
+    public String showInputDialog(String inputMessage) {
         JPanel panel = new JPanel();
-        JLabel label = new JLabel("Enter the OTP sent to your email:");
+        JLabel label = new JLabel(inputMessage);
         JTextField otpField = new RoundedTextField();
         otpField.setFont(new Font("Arial", Font.PLAIN, 17)); // Set the font for the text field
         otpField.setPreferredSize(new Dimension(200, 30)); // Set the preferred size for the text field
