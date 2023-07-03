@@ -3,20 +3,24 @@ package components;
 import javax.swing.*;
 import java.awt.*;
 
-public class InputDialog extends Component {
+public class InputDialog {
+    private static final int FONT_SIZE = 18;
+    private static final Dimension TEXT_FIELD_SIZE = new Dimension(200, 30);
+
     public String showInputDialog(String inputMessage) {
-        JPanel panel = new JPanel();
         JLabel label = new JLabel(inputMessage);
-        JTextField otpField = new RoundedTextField();
-        otpField.setFont(new Font("Arial", Font.PLAIN, 17)); // Set the font for the text field
-        otpField.setPreferredSize(new Dimension(200, 30)); // Set the preferred size for the text field
-        panel.add(label);
-        panel.add(otpField);
+        JTextField textField = new RoundedTextField();
+        textField.setFont(new Font("Arial", Font.PLAIN, FONT_SIZE));
+        textField.setPreferredSize(TEXT_FIELD_SIZE);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(label, BorderLayout.NORTH);
+        panel.add(textField, BorderLayout.CENTER);
 
         int option = JOptionPane.showOptionDialog(
-                this,
+                null,
                 panel,
-                "Enter OTP",
+                "Enter Input",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE,
                 null,
@@ -24,10 +28,6 @@ public class InputDialog extends Component {
                 null
         );
 
-        if (option == JOptionPane.OK_OPTION) {
-            return otpField.getText();
-        }
-
-        return ""; // Return empty string instead of null when cancel or close is clicked
+        return (option == JOptionPane.OK_OPTION) ? textField.getText() : null;
     }
 }
