@@ -25,9 +25,9 @@ DROP TABLE IF EXISTS `admin_login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `admin_login` (
-  `user_name` varchar(25) NOT NULL,
-  `pasword` varchar(20) NOT NULL,
-  UNIQUE KEY `user_name` (`user_name`)
+                               `user_name` varchar(25) NOT NULL,
+                               `pasword` varchar(20) NOT NULL,
+                               UNIQUE KEY `user_name` (`user_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -49,19 +49,19 @@ DROP TABLE IF EXISTS `booking_details`;
 /*!50001 DROP VIEW IF EXISTS `booking_details`*/;
 SET @saved_cs_client     = @@character_set_client;
 /*!50503 SET character_set_client = utf8mb4 */;
-/*!50001 CREATE VIEW `booking_details` AS SELECT 
- 1 AS `booking_id`,
- 1 AS `customer_id`,
- 1 AS `Name`,
- 1 AS `phone`,
- 1 AS `room_no`,
- 1 AS `room_type`,
- 1 AS `booking_status`,
- 1 AS `room_status`,
- 1 AS `start_date`,
- 1 AS `end_date`,
- 1 AS `booking_date`,
- 1 AS `price`*/;
+/*!50001 CREATE VIEW `booking_details` AS SELECT
+                                              1 AS `booking_id`,
+                                              1 AS `customer_id`,
+                                              1 AS `Name`,
+                                              1 AS `phone`,
+                                              1 AS `room_no`,
+                                              1 AS `room_type`,
+                                              1 AS `booking_status`,
+                                              1 AS `room_status`,
+                                              1 AS `start_date`,
+                                              1 AS `end_date`,
+                                              1 AS `booking_date`,
+                                              1 AS `price`*/;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -72,20 +72,20 @@ DROP TABLE IF EXISTS `bookings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `bookings` (
-  `booking_id` int NOT NULL AUTO_INCREMENT,
-  `room_no` int NOT NULL,
-  `customer_id` int NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `booking_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `booking_status` varchar(20) DEFAULT 'Is Requested',
-  `price` float NOT NULL,
-  PRIMARY KEY (`booking_id`),
-  KEY `fk_room_id` (`room_no`),
-  KEY `fk_customer_id` (`customer_id`),
-  CONSTRAINT `fk_customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
-  CONSTRAINT `fk_room_id` FOREIGN KEY (`room_no`) REFERENCES `rooms` (`room_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+                            `booking_id` int NOT NULL AUTO_INCREMENT,
+                            `room_no` int NOT NULL,
+                            `customer_id` int NOT NULL,
+                            `start_date` date NOT NULL,
+                            `end_date` date NOT NULL,
+                            `booking_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+                            `booking_status` varchar(20) DEFAULT 'Is Requested',
+                            `price` float NOT NULL,
+                            PRIMARY KEY (`booking_id`),
+                            KEY `fk_room_id` (`room_no`),
+                            KEY `fk_customer_id` (`customer_id`),
+                            CONSTRAINT `fk_customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
+                            CONSTRAINT `fk_room_id` FOREIGN KEY (`room_no`) REFERENCES `rooms` (`room_no`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -94,6 +94,7 @@ CREATE TABLE `bookings` (
 
 LOCK TABLES `bookings` WRITE;
 /*!40000 ALTER TABLE `bookings` DISABLE KEYS */;
+INSERT INTO `bookings` VALUES (1,1,3,'2023-07-01','2023-07-03','2023-07-01 15:24:16','Completed',8000),(2,2,5,'2023-07-01','2023-07-04','2023-07-01 16:13:59','Completed',15000),(3,3,3,'2023-07-04','2023-07-05','2023-07-01 17:28:15','Cancelled',1000),(4,4,2,'2023-07-04','2023-07-05','2023-07-01 18:11:16','Cancelled',4000),(5,4,2,'2023-07-03','2023-07-04','2023-07-01 20:22:31','Cancelled',4000),(6,5,2,'2023-07-05','2023-07-06','2023-07-01 20:29:46','Cancelled',8000),(7,1,5,'2023-07-03','2023-07-05','2023-07-02 03:53:04','Is Requested',8000),(8,5,3,'2023-07-03','2023-07-04','2023-07-03 15:44:34','Booked',8000),(9,3,6,'2023-07-04','2023-07-06','2023-07-04 06:17:23','Cancel Booking',2000);
 /*!40000 ALTER TABLE `bookings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -105,18 +106,19 @@ DROP TABLE IF EXISTS `customers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `customers` (
-  `customer_id` int NOT NULL AUTO_INCREMENT,
-  `first_name` varchar(25) NOT NULL,
-  `last_name` varchar(25) NOT NULL,
-  `user_name` varchar(25) NOT NULL,
-  `pasword` varchar(20) NOT NULL,
-  `email` varchar(30) NOT NULL,
-  `phone` varchar(15) NOT NULL,
-  `address` varchar(50) NOT NULL,
-  `emergency_contact` varchar(15) DEFAULT NULL,
-  PRIMARY KEY (`customer_id`),
-  UNIQUE KEY `user_name` (`user_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+                             `customer_id` int NOT NULL AUTO_INCREMENT,
+                             `first_name` varchar(25) NOT NULL,
+                             `last_name` varchar(25) NOT NULL,
+                             `user_name` varchar(25) NOT NULL,
+                             `pasword` varchar(20) NOT NULL,
+                             `email` varchar(30) NOT NULL,
+                             `phone` varchar(15) NOT NULL,
+                             `address` varchar(50) NOT NULL,
+                             `emergency_contact` varchar(15) DEFAULT NULL,
+                             PRIMARY KEY (`customer_id`),
+                             UNIQUE KEY `user_name` (`user_name`),
+                             UNIQUE KEY `email_UNIQUE` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -125,6 +127,7 @@ CREATE TABLE `customers` (
 
 LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
+INSERT INTO `customers` VALUES (2,'Farhan','Rafique','farhan','2.Amhunter','thedynamiccoder@gmail.com','03467760117','Pakpattan','030943250'),(3,'Adnan','Rafique','adnan','2.Amhunter','adnandd2547@gmail.com','03085038859','Pakpattan','03085038859'),(4,'Ali','Ahmad','ali','Test123#','sumairarafique37@gmail.com','03256789976','Lahore','03256788976'),(5,'Adnan','Rafique','USMAN','2.Amhunter,','shanelmohr892@gmail.com','03467760117','PakPATTAN','03467760117'),(6,'Hamza','Ilyas','hami','#141283Abc','hamzafullstackdev1@gmail.com','03484088841','Grid','03150706126');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -136,11 +139,12 @@ DROP TABLE IF EXISTS `feedback`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `feedback` (
-  `booking_id` int NOT NULL,
-  `star_rating` int NOT NULL,
-  `review` varchar(300) DEFAULT NULL,
-  KEY `fk_booking_id` (`booking_id`),
-  CONSTRAINT `fk_booking_id` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`booking_id`)
+                            `booking_id` int NOT NULL,
+                            `star_rating` int NOT NULL,
+                            `review` varchar(300) DEFAULT NULL,
+                            `feeback_status` varchar(30) NOT NULL DEFAULT 'Pending',
+                            KEY `fk_booking_id` (`booking_id`),
+                            CONSTRAINT `fk_booking_id` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`booking_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -161,13 +165,13 @@ DROP TABLE IF EXISTS `room_types`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `room_types` (
-  `type_id` int NOT NULL AUTO_INCREMENT,
-  `room_type` varchar(20) NOT NULL,
-  `capacity` int NOT NULL,
-  `rent` float NOT NULL,
-  `description` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+                              `type_id` int NOT NULL AUTO_INCREMENT,
+                              `room_type` varchar(20) NOT NULL,
+                              `capacity` int NOT NULL,
+                              `rent` float NOT NULL,
+                              `description` varchar(100) DEFAULT NULL,
+                              PRIMARY KEY (`type_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -176,7 +180,7 @@ CREATE TABLE `room_types` (
 
 LOCK TABLES `room_types` WRITE;
 /*!40000 ALTER TABLE `room_types` DISABLE KEYS */;
-INSERT INTO `room_types` VALUES (1,'Suite',4,4000,'');
+INSERT INTO `room_types` VALUES (1,'Suite',4,4000,''),(2,'Family',5,5000,''),(3,'Standard',1,1000,''),(4,'Deluxe',4,4000,''),(5,'Family',8,8000,''),(6,'Deluxe',5,3000,'');
 /*!40000 ALTER TABLE `room_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,13 +192,13 @@ DROP TABLE IF EXISTS `rooms`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `rooms` (
-  `room_no` int NOT NULL AUTO_INCREMENT,
-  `room_status` varchar(20) NOT NULL DEFAULT 'Available',
-  `type_id` int NOT NULL,
-  PRIMARY KEY (`room_no`),
-  KEY `fk_room_type_id` (`type_id`),
-  CONSTRAINT `fk_room_type_id` FOREIGN KEY (`type_id`) REFERENCES `room_types` (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+                         `room_no` int NOT NULL AUTO_INCREMENT,
+                         `room_status` varchar(20) NOT NULL DEFAULT 'Available',
+                         `type_id` int NOT NULL,
+                         PRIMARY KEY (`room_no`),
+                         KEY `fk_room_type_id` (`type_id`),
+                         CONSTRAINT `fk_room_type_id` FOREIGN KEY (`type_id`) REFERENCES `room_types` (`type_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,7 +207,7 @@ CREATE TABLE `rooms` (
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES (1,'Available',1);
+INSERT INTO `rooms` VALUES (1,'Available',1),(2,'Available',2),(3,'Available',3),(4,'Available',4),(5,'Occupied',5),(6,'Available',6);
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -254,15 +258,15 @@ BEGIN
     DECLARE total_price FLOAT;
     DECLARE room_price FLOAT;
     DECLARE no_of_days INT;
-    
-    SELECT RT.rent INTO room_price 
+
+    SELECT RT.rent INTO room_price
     FROM room_types AS RT
-    JOIN rooms AS R ON RT.type_id = R.type_id AND room_no = p_room_no;
-    
+             JOIN rooms AS R ON RT.type_id = R.type_id AND room_no = p_room_no;
+
     SELECT DATEDIFF(p_chekout_date, p_checkin_date) INTO no_of_days;
-    
+
     SET total_price = (room_price * no_of_days);
-    
+
     RETURN total_price;
 END ;;
 DELIMITER ;
@@ -287,7 +291,7 @@ BEGIN
     SELECT COUNT(*) INTO current_bookings_count
     FROM bookings
     WHERE booking_status = 'Confirmed'
-    AND CURDATE() BETWEEN start_date AND end_date;
+      AND CURDATE() BETWEEN start_date AND end_date;
     RETURN current_bookings_count;
 END ;;
 DELIMITER ;
@@ -306,17 +310,39 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `get_customer_id`(
-	p_username VARCHAR(30)
+    p_username VARCHAR(30)
 ) RETURNS int
     DETERMINISTIC
 BEGIN
-	DECLARE c_ID INT;
-    
-    SELECT customer_id INTO c_ID 
+    DECLARE c_ID INT;
+
+    SELECT customer_id INTO c_ID
     FROM customers
     WHERE user_name = p_username;
 
-RETURN c_ID;
+    RETURN c_ID;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP FUNCTION IF EXISTS `get_customer_name` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `get_customer_name`(p_userName VARCHAR(255)) RETURNS varchar(255) CHARSET utf8mb4
+    DETERMINISTIC
+BEGIN
+    DECLARE v_customer_name VARCHAR(255);
+    SELECT CONCAT(first_name, ' ', last_name) INTO v_customer_name FROM customers WHERE user_name = p_userName;
+    RETURN v_customer_name;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -403,7 +429,7 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `insert_booking_data`(
-	p_room_no INT,
+    p_room_no INT,
     p_customer_id INT,
     p_start_date DATE,
     p_end_date DATE,
@@ -411,15 +437,40 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `insert_booking_data`(
 ) RETURNS int
     DETERMINISTIC
 BEGIN
-	DECLARE p_booking_id INT;
-    
+    DECLARE p_booking_id INT;
+
     -- Insert the booking data into the table
     INSERT INTO bookings (room_no, customer_id, start_date, end_date, price)
     VALUES (p_room_no, p_customer_id, p_start_date, p_end_date, p_price);
-    
+
     -- Retrieve the booking ID of the inserted row
     SET p_booking_id = LAST_INSERT_ID();
-RETURN p_booking_id;
+    RETURN p_booking_id;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_customer_email_by_booking_id` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_customer_email_by_booking_id`(
+    IN bookingId INT,
+    OUT customerEmail VARCHAR(30)
+)
+BEGIN
+    SELECT c.email INTO customerEmail
+    FROM bookings b
+             JOIN customers c ON b.customer_id = c.customer_id
+    WHERE b.booking_id = bookingId;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -441,10 +492,10 @@ BEGIN
     DECLARE rowCount INT;
 
     -- Check if there are any bookings in the current month
-    SELECT COUNT(*) INTO rowCount 
-    FROM bookings 
+    SELECT COUNT(*) INTO rowCount
+    FROM bookings
     WHERE MONTH(start_date) = MONTH(CURRENT_DATE()) AND YEAR(start_date) = YEAR(CURRENT_DATE())
-    AND booking_status = 'Completed';
+      AND booking_status = 'Completed';
 
     IF rowCount = 0 THEN
         -- No bookings found
@@ -453,11 +504,11 @@ BEGIN
         -- Retrieve the monthly revenue information
         SELECT booking_id, room_no, start_date, end_date, price
         FROM bookings
-        WHERE MONTH(start_date) = MONTH(CURRENT_DATE()) 
-        AND YEAR(start_date) = YEAR(CURRENT_DATE()) AND booking_status = 'Completed';
+        WHERE MONTH(start_date) = MONTH(CURRENT_DATE())
+          AND YEAR(start_date) = YEAR(CURRENT_DATE()) AND booking_status = 'Completed';
 
         SET result = TRUE;
-        
+
     END IF;
 END ;;
 DELIMITER ;
@@ -476,7 +527,7 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_room_revenue_over_time_report`(
-	IN roomNumber INT,
+    IN roomNumber INT,
     OUT result BOOLEAN
 )
 BEGIN
@@ -513,7 +564,7 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_specific_room_revenue_report`(
-	IN p_roomNumber INT,
+    IN p_roomNumber INT,
     IN p_month INT,
     IN p_year INT,
     OUT result BOOLEAN
@@ -522,8 +573,8 @@ BEGIN
     DECLARE rowCount INT;
 
     -- Check if there are any bookings for the specified room in the given month and year
-    SELECT COUNT(*) INTO rowCount 
-    FROM bookings 
+    SELECT COUNT(*) INTO rowCount
+    FROM bookings
     WHERE room_no = p_roomNumber AND MONTH(start_date) = p_month AND YEAR(start_date) = p_year AND booking_status = 'Completed';
 
     IF rowCount = 0 THEN
@@ -532,8 +583,8 @@ BEGIN
     ELSE
         -- Retrieve the revenue information for the specified room in the given month and year
         SELECT booking_id, room_no, start_date, end_date, price
-        FROM bookings 
-		WHERE room_no = p_roomNumber AND MONTH(start_date) = p_month AND YEAR(start_date) = p_year AND booking_status = 'Completed';
+        FROM bookings
+        WHERE room_no = p_roomNumber AND MONTH(start_date) = p_month AND YEAR(start_date) = p_year AND booking_status = 'Completed';
 
         SET result = TRUE;
     END IF;
@@ -605,6 +656,30 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_check_user_exists` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_check_user_exists`(
+    IN p_email VARCHAR(30),
+    OUT p_user_exists BOOLEAN
+)
+BEGIN
+    SET p_user_exists = EXISTS(
+        SELECT 1 FROM customers WHERE email = p_email
+    );
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `sp_customer_login` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -650,11 +725,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_delete_room`(
 BEGIN
     DECLARE rowsAffected INT DEFAULT 0;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        SET isDeleted = false;
-    END;
-    
+        BEGIN
+            ROLLBACK;
+            SET isDeleted = false;
+        END;
+
     START TRANSACTION;
 
     -- Delete from rooms table
@@ -697,7 +772,7 @@ BEGIN
 
     -- Delete from room_types table
     DELETE FROM room_types WHERE type_id = roomNumber;
-    
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -716,8 +791,53 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_booking_details`()
 BEGIN
-	SELECT *
+    SELECT *
     FROM booking_details;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_customer_email` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_customer_email`()
+BEGIN
+    SELECT email
+    FROM customers;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_get_customer_email_by_booking_id` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_customer_email_by_booking_id`(
+    IN bookingId INT,
+    OUT customerEmail VARCHAR(30)
+)
+BEGIN
+    SELECT c.email INTO customerEmail
+    FROM bookings b
+             JOIN customers c ON b.customer_id = c.customer_id
+    WHERE b.booking_id = bookingId;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -756,9 +876,9 @@ DELIMITER ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_rooms_details`()
 BEGIN
-	SELECT R.room_no, R.room_status, RT.room_type, RT.capacity, RT.rent, RT.description
-    FROM rooms AS R JOIN room_types AS RT 
-    USING (type_id) 
+    SELECT R.room_no, R.room_status, RT.room_type, RT.capacity, RT.rent, RT.description
+    FROM rooms AS R JOIN room_types AS RT
+                         USING (type_id)
     ORDER BY room_no;
 END ;;
 DELIMITER ;
@@ -777,10 +897,10 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_user_bookings`(
-	IN p_customer_id INT
+    IN p_customer_id INT
 )
 BEGIN
-	SELECT * 
+    SELECT *
     FROM booking_details
     WHERE customer_id = p_customer_id;
 END ;;
@@ -811,7 +931,7 @@ BEGIN
     -- Insert the booking data into the table
     INSERT INTO bookings (room_no, customer_id, start_date, end_date, price)
     VALUES (p_room_no, p_customer_id, p_start_date, p_end_date, p_price);
-    
+
     -- Retrieve the booking ID of the inserted row
     SET p_booking_id = LAST_INSERT_ID();
 END ;;
@@ -840,9 +960,9 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_room_data`(
 )
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        SET p_success = FALSE;
-    END;
+        BEGIN
+            SET p_success = FALSE;
+        END;
 
     START TRANSACTION;
 
@@ -881,26 +1001,50 @@ BEGIN
     -- Check if the room status is occupied and booking status is accepted
     DECLARE roomStatus VARCHAR(10);
     DECLARE bookingStatus VARCHAR(20);
-    
+
     SELECT room_status, booking_status INTO roomStatus, bookingStatus
     FROM booking_details
     WHERE booking_id = bookingID;
-    
+
     IF roomStatus = 'Occupied' AND bookingStatus = 'Booked' THEN
         -- Update room status to available
         UPDATE rooms
         SET room_status = 'Available'
         WHERE room_no = (SELECT room_no FROM bookings WHERE booking_id = bookingID);
-        
+
         -- Update booking status to completed
         UPDATE bookings
         SET booking_status = 'Completed'
-        WHERE booking_id = bookingID;        
-      
+        WHERE booking_id = bookingID;
+
     ELSE
         -- Room is not occupied or booking status is not accepted
         SELECT NULL; -- Return NULL to indicate checkout failure
     END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_reset_password` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_reset_password`(
+    IN p_email VARCHAR(30),
+    IN p_new_password VARCHAR(20)
+)
+BEGIN
+    UPDATE customers
+    SET pasword = p_new_password
+    WHERE email = p_email;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -918,14 +1062,14 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_search_booking`(
-	IN search_term VARCHAR(255)
+    IN search_term VARCHAR(255)
 )
 BEGIN
-	SELECT * 
+    SELECT *
     FROM booking_details
     WHERE `Name` LIKE CONCAT('%', search_term, '%') OR room_type LIKE CONCAT('%', search_term, '%')
-	OR room_no LIKE CONCAT('%', search_term, '%') OR booking_status LIKE CONCAT('%', search_term, '%')
-    OR booking_id LIKE CONCAT('%', search_term, '%');
+       OR room_no LIKE CONCAT('%', search_term, '%') OR booking_status LIKE CONCAT('%', search_term, '%')
+       OR booking_id LIKE CONCAT('%', search_term, '%');
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -946,7 +1090,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_search_room`(IN search_term VARC
 BEGIN
     SELECT R.room_no, RT.room_type, R.room_status, RT.capacity, RT.rent, RT.description
     FROM rooms AS R
-    JOIN room_types AS RT USING (type_id)
+             JOIN room_types AS RT USING (type_id)
     WHERE R.room_no LIKE CONCAT('%', search_term, '%') OR RT.room_type LIKE CONCAT('%', search_term, '%');
 END ;;
 DELIMITER ;
@@ -965,15 +1109,15 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_search_user_booking`(
-	IN search_term VARCHAR(255),
+    IN search_term VARCHAR(255),
     IN p_customer_id INT
 )
 BEGIN
-	SELECT * 
+    SELECT *
     FROM booking_details
     WHERE (`Name` LIKE CONCAT('%', search_term, '%') OR room_type LIKE CONCAT('%', search_term, '%')
-	OR room_no LIKE CONCAT('%', search_term, '%') OR booking_status LIKE CONCAT('%', search_term, '%')
-    OR booking_id LIKE CONCAT('%', search_term, '%') ) AND customer_id = p_customer_id;
+        OR room_no LIKE CONCAT('%', search_term, '%') OR booking_status LIKE CONCAT('%', search_term, '%')
+        OR booking_id LIKE CONCAT('%', search_term, '%') ) AND customer_id = p_customer_id;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1020,11 +1164,11 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_update_booking_status`(
-	IN p_booking_id INT,
+    IN p_booking_id INT,
     IN p_booking_status VARCHAR(20)
 )
 BEGIN
-	UPDATE bookings
+    UPDATE bookings
     SET booking_status = p_booking_status
     WHERE booking_id = p_booking_id;
 END ;;
@@ -1054,26 +1198,26 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_update_room`(
 )
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        SET isUpdated = false;
-    END;
+        BEGIN
+            ROLLBACK;
+            SET isUpdated = false;
+        END;
 
     START TRANSACTION;
-    
+
     UPDATE room_types
     SET room_type = newRoomType,
         capacity = newCapacity,
         rent = newRent,
         description = newDescription
     WHERE type_id = (SELECT type_id FROM rooms WHERE room_no = roomNumber);
-    
+
     UPDATE rooms
     SET room_status = newRoomStatus
     WHERE room_no = roomNumber;
-    
+
     SET isUpdated = ROW_COUNT() > 0;
-    
+
     COMMIT;
 END ;;
 DELIMITER ;
@@ -1092,11 +1236,11 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_update_room_status`(
-	IN p_room_no INT,
+    IN p_room_no INT,
     IN p_room_status VARCHAR(20)
 )
 BEGIN
-	UPDATE rooms
+    UPDATE rooms
     SET room_status = p_room_status
     WHERE room_no = p_room_no;
 END ;;
@@ -1118,8 +1262,8 @@ DELIMITER ;
 /*!50001 SET character_set_results     = utf8mb4 */;
 /*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `booking_details` AS select `b`.`booking_id` AS `booking_id`,`c`.`customer_id` AS `customer_id`,concat(`c`.`first_name`,' ',`c`.`last_name`) AS `Name`,`c`.`phone` AS `phone`,`r`.`room_no` AS `room_no`,`rt`.`room_type` AS `room_type`,`b`.`booking_status` AS `booking_status`,`r`.`room_status` AS `room_status`,`b`.`start_date` AS `start_date`,`b`.`end_date` AS `end_date`,`b`.`booking_date` AS `booking_date`,`b`.`price` AS `price` from (((`bookings` `b` join `customers` `c` on((`b`.`customer_id` = `c`.`customer_id`))) join `rooms` `r` on((`b`.`room_no` = `r`.`room_no`))) join `room_types` `rt` on((`r`.`type_id` = `rt`.`type_id`))) */;
+    /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+    /*!50001 VIEW `booking_details` AS select `b`.`booking_id` AS `booking_id`,`c`.`customer_id` AS `customer_id`,concat(`c`.`first_name`,' ',`c`.`last_name`) AS `Name`,`c`.`phone` AS `phone`,`r`.`room_no` AS `room_no`,`rt`.`room_type` AS `room_type`,`b`.`booking_status` AS `booking_status`,`r`.`room_status` AS `room_status`,`b`.`start_date` AS `start_date`,`b`.`end_date` AS `end_date`,`b`.`booking_date` AS `booking_date`,`b`.`price` AS `price` from (((`bookings` `b` join `customers` `c` on((`b`.`customer_id` = `c`.`customer_id`))) join `rooms` `r` on((`b`.`room_no` = `r`.`room_no`))) join `room_types` `rt` on((`r`.`type_id` = `rt`.`type_id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -1133,4 +1277,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-06-30 11:34:10
+-- Dump completed on 2023-07-05  2:06:21
