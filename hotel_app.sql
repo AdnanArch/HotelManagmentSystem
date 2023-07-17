@@ -85,7 +85,7 @@ CREATE TABLE `bookings` (
                             KEY `fk_customer_id` (`customer_id`),
                             CONSTRAINT `fk_customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`),
                             CONSTRAINT `fk_room_id` FOREIGN KEY (`room_no`) REFERENCES `rooms` (`room_no`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -94,7 +94,7 @@ CREATE TABLE `bookings` (
 
 LOCK TABLES `bookings` WRITE;
 /*!40000 ALTER TABLE `bookings` DISABLE KEYS */;
-INSERT INTO `bookings` VALUES (1,1,3,'2023-07-01','2023-07-03','2023-07-01 15:24:16','Completed',8000),(2,2,5,'2023-07-01','2023-07-04','2023-07-01 16:13:59','Completed',15000),(3,3,3,'2023-07-04','2023-07-05','2023-07-01 17:28:15','Cancelled',1000),(4,4,2,'2023-07-04','2023-07-05','2023-07-01 18:11:16','Cancelled',4000),(5,4,2,'2023-07-03','2023-07-04','2023-07-01 20:22:31','Cancelled',4000),(6,5,2,'2023-07-05','2023-07-06','2023-07-01 20:29:46','Cancelled',8000),(7,1,5,'2023-07-03','2023-07-05','2023-07-02 03:53:04','Is Requested',8000),(8,5,3,'2023-07-03','2023-07-04','2023-07-03 15:44:34','Booked',8000),(9,3,6,'2023-07-04','2023-07-06','2023-07-04 06:17:23','Cancel Booking',2000);
+INSERT INTO `bookings` VALUES (1,1,3,'2023-07-01','2023-07-03','2023-07-01 15:24:16','Completed',8000),(2,2,5,'2023-07-01','2023-07-04','2023-07-01 16:13:59','Completed',15000),(3,3,3,'2023-07-04','2023-07-05','2023-07-01 17:28:15','Cancelled',1000),(4,4,2,'2023-07-04','2023-07-05','2023-07-01 18:11:16','Cancelled',4000),(5,4,2,'2023-07-03','2023-07-04','2023-07-01 20:22:31','Cancelled',4000),(6,5,2,'2023-07-05','2023-07-06','2023-07-01 20:29:46','Cancelled',8000),(7,1,5,'2023-07-03','2023-07-05','2023-07-02 03:53:04','Is Requested',8000),(8,5,3,'2023-07-03','2023-07-04','2023-07-03 15:44:34','Completed',8000),(9,3,6,'2023-07-04','2023-07-06','2023-07-04 06:17:23','Cancel Booking',2000),(10,6,3,'2023-07-05','2023-07-06','2023-07-04 22:51:48','Cancel Booking',3000);
 /*!40000 ALTER TABLE `bookings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -129,6 +129,29 @@ LOCK TABLES `customers` WRITE;
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
 INSERT INTO `customers` VALUES (2,'Farhan','Rafique','farhan','2.Amhunter','thedynamiccoder@gmail.com','03467760117','Pakpattan','030943250'),(3,'Adnan','Rafique','adnan','2.Amhunter','adnandd2547@gmail.com','03085038859','Pakpattan','03085038859'),(4,'Ali','Ahmad','ali','Test123#','sumairarafique37@gmail.com','03256789976','Lahore','03256788976'),(5,'Adnan','Rafique','USMAN','2.Amhunter,','shanelmohr892@gmail.com','03467760117','PakPATTAN','03467760117'),(6,'Hamza','Ilyas','hami','#141283Abc','hamzafullstackdev1@gmail.com','03484088841','Grid','03150706126');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `dumy`
+--
+
+DROP TABLE IF EXISTS `dumy`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `dumy` (
+                        `s_name` varchar(20) DEFAULT NULL,
+                        `id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dumy`
+--
+
+LOCK TABLES `dumy` WRITE;
+/*!40000 ALTER TABLE `dumy` DISABLE KEYS */;
+INSERT INTO `dumy` VALUES ('adnan',1),(NULL,1),(NULL,3);
+/*!40000 ALTER TABLE `dumy` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -180,7 +203,7 @@ CREATE TABLE `room_types` (
 
 LOCK TABLES `room_types` WRITE;
 /*!40000 ALTER TABLE `room_types` DISABLE KEYS */;
-INSERT INTO `room_types` VALUES (1,'Suite',4,4000,''),(2,'Family',5,5000,''),(3,'Standard',1,1000,''),(4,'Deluxe',4,4000,''),(5,'Family',8,8000,''),(6,'Deluxe',5,3000,'');
+INSERT INTO `room_types` VALUES (1,'Suite',4,4000,''),(2,'Family',5,5000,''),(3,'Standard',1,1000,'description'),(4,'Deluxe',4,4000,''),(5,'Family',8,8000,''),(6,'Deluxe',5,3000,'');
 /*!40000 ALTER TABLE `room_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -207,7 +230,7 @@ CREATE TABLE `rooms` (
 
 LOCK TABLES `rooms` WRITE;
 /*!40000 ALTER TABLE `rooms` DISABLE KEYS */;
-INSERT INTO `rooms` VALUES (1,'Available',1),(2,'Available',2),(3,'Available',3),(4,'Available',4),(5,'Occupied',5),(6,'Available',6);
+INSERT INTO `rooms` VALUES (1,'Available',1),(2,'Available',2),(3,'Available',3),(4,'Available',4),(5,'Available',5),(6,'Occupied',6);
 /*!40000 ALTER TABLE `rooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1277,4 +1300,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-07-05  2:06:21
+-- Dump completed on 2023-07-17 21:26:23
