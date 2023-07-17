@@ -13,26 +13,41 @@ public class RoundedPasswordField extends JPasswordField {
     }
 
     @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(super.getPreferredSize().width, 30);
+    }
+
+    @Override
     protected void paintComponent(Graphics g) {
-        Graphics2D g3 = (Graphics2D) g.create();
-        g3.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         int width = getWidth();
         int height = getHeight();
         Shape shape = new RoundRectangle2D.Float(0, 0, width - 1, height - 1, ARC_WIDTH, ARC_HEIGHT);
 
-        g3.setColor(getBackground());
-        g3.fill(shape);
-        g3.setColor(getForeground());
-        g3.draw(shape);
+        g2.setColor(getBackground());
+        g2.fill(shape);
+        g2.setColor(getForeground());
+        g2.draw(shape);
 
-        g3.dispose();
+        g2.dispose();
 
         super.paintComponent(g);
     }
 
     @Override
     protected void paintBorder(Graphics g) {
-        // Remove border painting
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        int width = getWidth();
+        int height = getHeight();
+        Shape shape = new RoundRectangle2D.Float(0, 0, width - 1, height - 1, ARC_WIDTH, ARC_HEIGHT);
+
+        g2.setColor(getForeground());
+        g2.draw(shape);
+
+        g2.dispose();
     }
 }
