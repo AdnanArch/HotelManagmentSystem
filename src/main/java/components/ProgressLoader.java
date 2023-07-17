@@ -4,17 +4,19 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ProgressLoader extends Component {
-    public JDialog createLoadingDialog(String messageText){
-        // Create and customize the loading dialog
-        JDialog loadingDialog = new JDialog();
+    private JDialog loadingDialog;
+
+    public void showLoadingDialog(String messageText) {
+        // Create the loading dialog
+        loadingDialog = new JDialog();
         loadingDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         loadingDialog.setUndecorated(true);
         loadingDialog.setSize(350, 150);
-        loadingDialog.setLocationRelativeTo(this);
+        loadingDialog.setLocationRelativeTo(null);
 
         // Create the panel for the loading dialog
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Create the title label
         JLabel titleLabel = new JLabel("Processing...");
@@ -32,9 +34,14 @@ public class ProgressLoader extends Component {
         progressBar.setIndeterminate(true);
         panel.add(progressBar, BorderLayout.SOUTH);
 
-        loadingDialog.add(panel);
+        loadingDialog.getContentPane().add(panel);
         loadingDialog.setVisible(true);
+    }
 
-        return loadingDialog;
+    public void hideLoadingDialog() {
+        if (loadingDialog != null) {
+            loadingDialog.dispose();
+            loadingDialog = null;
+        }
     }
 }
