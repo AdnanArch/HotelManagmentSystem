@@ -7,14 +7,33 @@ import java.awt.geom.RoundRectangle2D;
 public class RoundedButton extends JButton {
     private static final int ARC_WIDTH = 15;
     private static final int ARC_HEIGHT = 15;
+    private Color backgroundColor;
+    private Color foregroundColor;
+    private Font buttonFont;
 
     public RoundedButton(String text) {
         super(text);
         setOpaque(false);
-        setFont(new Font("Sans-serif", Font.PLAIN, 18));
-//        setForeground(new Color(255, 255, 255));
-//        setBackground(new Color(52, 152, 219));
+        buttonFont = new Font("Sans-serif", Font.PLAIN, 18);
+        setButtonColors(new Color(52, 152, 219), Color.WHITE);
+        setButtonFont(buttonFont);
+
+
+        setBackground(backgroundColor);
+        setForeground(foregroundColor);
+        setFont(buttonFont);
         setFocusable(false);
+    }
+
+    public void setButtonColors(Color backgroundColor, Color foregroundColor) {
+        this.backgroundColor = backgroundColor;
+        this.foregroundColor = foregroundColor;
+        repaint();
+    }
+
+    public void setButtonFont(Font font) {
+        this.buttonFont = font;
+        repaint();
     }
 
     @Override
@@ -26,9 +45,9 @@ public class RoundedButton extends JButton {
         int height = getHeight();
         Shape shape = new RoundRectangle2D.Float(0, 0, width - 1, height - 1, ARC_WIDTH, ARC_HEIGHT);
 
-        g2.setColor(getBackground());
+        g2.setColor(backgroundColor);
         g2.fill(shape);
-        g2.setColor(getForeground());
+        g2.setColor(foregroundColor);
         g2.draw(shape);
 
         g2.dispose();
@@ -39,7 +58,8 @@ public class RoundedButton extends JButton {
     @Override
     protected void paintBorder(Graphics g) {
         // Paint the border
-        g.setColor(getForeground());
+        g.setColor(foregroundColor);
         g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, ARC_WIDTH, ARC_HEIGHT);
     }
+
 }
