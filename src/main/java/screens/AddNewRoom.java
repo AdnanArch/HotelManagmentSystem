@@ -27,7 +27,6 @@ public class AddNewRoom extends JFrame implements ActionListener {
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(null);
-//        JPanel mainPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         mainPanel.setBackground(new Color(58, 109, 122));
         add(mainPanel);
 

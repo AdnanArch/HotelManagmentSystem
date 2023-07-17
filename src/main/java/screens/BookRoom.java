@@ -198,9 +198,17 @@ public class BookRoom extends JFrame {
                         roomNo = (int) table.getValueAt(selectedRow, 0);
                         String roomType = table.getValueAt(selectedRow, 1).toString();
                         int capacity = (int) table.getValueAt(selectedRow, 2);
-                        String status = table.getValueAt(selectedRow, 4).toString();
+                        String roomStatus = table.getValueAt(selectedRow, 4).toString();
                         String description = table.getValueAt(selectedRow, 5).toString();
-                        new BookNow(roomNo, capacity, roomType, status, description);
+
+                        if (roomStatus.equals("Occupied")) {
+                            JOptionPane.showMessageDialog(null, "Your can not book this room because it is occupied.", "Booking Error", JOptionPane.ERROR_MESSAGE);
+                        } else if (roomStatus.equals("Maintenance")) {
+                            JOptionPane.showMessageDialog(null, "Your can not book this room because it is under Maintenance.", "Booking Error", JOptionPane.ERROR_MESSAGE);
+
+                        }else{
+                            new BookNow(roomNo, capacity, roomType, roomStatus, description);
+                        }
                     }
                 }
             });

@@ -12,6 +12,8 @@ import java.awt.event.MouseEvent;
 public class AdminDashboard extends JFrame implements ActionListener {
     private final RoundedButton roomButton;
     private final RoundedButton bookingButton;
+    private final RoundedButton revenueButton;
+    private final RoundedButton feedbackButton;
 
     public AdminDashboard() {
         super("Admin Dashboard");
@@ -68,16 +70,19 @@ public class AdminDashboard extends JFrame implements ActionListener {
         ImageIcon roomsIcon = new ImageIcon(ClassLoader.getSystemResource("images/bedroom.png"));
         ImageIcon bookingsIcon = new ImageIcon(ClassLoader.getSystemResource("images/booking.png"));
         ImageIcon revenueIcon = new ImageIcon(ClassLoader.getSystemResource("images/revenue.png"));
+        ImageIcon feedbackIcon = new ImageIcon(ClassLoader.getSystemResource("images/feedback.png"));
 
         // Scale the images to 150x150 pixels
         Image scaledRoomsImage = roomsIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
         Image scaledBookingsImage = bookingsIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
         Image scaledRevenueImage = revenueIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        Image scaledFeedabckImage = feedbackIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
 
         // Create ImageIcon instances with the scaled images
         ImageIcon scaledRoomsIcon = new ImageIcon(scaledRoomsImage);
         ImageIcon scaledBookingsIcon = new ImageIcon(scaledBookingsImage);
         ImageIcon scaledRevenueIcon = new ImageIcon(scaledRevenueImage);
+        ImageIcon scaledFeedbackIcon = new ImageIcon(scaledFeedabckImage);
 
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setBackground(new Color(12, 55, 64));
@@ -127,13 +132,29 @@ public class AdminDashboard extends JFrame implements ActionListener {
         gbc.gridx = 2; // Move to the next column
         gbc.gridy = 1; // Move to the next row
 
-        RoundedButton revenueButton = new RoundedButton("Revenue");
+        revenueButton = new RoundedButton("Revenue");
         revenueButton.setPreferredSize(new Dimension(150, 50));
         revenueButton.setFont(new Font("Arial", Font.BOLD, 18));
         revenueButton.setBackground(new Color(65, 131, 215));
         revenueButton.addActionListener(this);
         revenueButton.setFocusable(false);
         centerPanel.add(revenueButton, gbc);
+
+        gbc.gridx = 3; // Move to the next column
+        gbc.gridy = 0; // Reset to the first row
+
+        JLabel feedbackLabel = new JLabel(scaledFeedbackIcon);
+        centerPanel.add(feedbackLabel, gbc);
+
+        gbc.gridx = 3; // Move to the next column
+        gbc.gridy = 1; // Move to the next row
+
+        feedbackButton = new RoundedButton("Feedbacks");
+        feedbackButton.setPreferredSize(new Dimension(150, 50));
+        feedbackButton.setFont(new Font("Arial", Font.BOLD, 18));
+        feedbackButton.setBackground(new Color(65, 131, 215));
+        feedbackButton.addActionListener(this);
+        centerPanel.add(feedbackButton, gbc);
 
         contentPanel.add(centerPanel, BorderLayout.CENTER);
 
@@ -151,8 +172,10 @@ public class AdminDashboard extends JFrame implements ActionListener {
             new Rooms();
         } else if (actionEvent.getSource() == bookingButton) {
             new Bookings();
-        } else {
+        } else if(actionEvent.getSource() == revenueButton){
             new Revenue();
+        }else{
+            new Feedback();
         }
     }
 }

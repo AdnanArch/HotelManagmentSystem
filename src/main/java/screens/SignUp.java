@@ -216,8 +216,8 @@ public class SignUp extends JFrame implements ActionListener {
                         JOptionPane.showMessageDialog(this, "Account with this email already exists.");
                     } else {
                         // Create and customize the loading dialog
-                        ProgressLoader loader = new ProgressLoader();
-                        JDialog loadingDialog = loader.createLoadingDialog("Please wait while the OTP is being sent.");
+                        ProgressLoader progressLoader = new ProgressLoader();
+                        progressLoader.showLoadingDialog("Please wait while the OTP is being sent.");
 
                         // Perform time-consuming task in a separate thread
                         Thread otpThread = new Thread(() -> {
@@ -227,7 +227,7 @@ public class SignUp extends JFrame implements ActionListener {
                                 boolean otpStatus = sendOTP(emailText, generatedOTP);
                                 if (otpStatus) {
                                     SwingUtilities.invokeLater(() -> {
-                                        loadingDialog.dispose(); // Close the loading dialog
+                                        progressLoader.hideLoadingDialog(); // Close the loading dialog
                                         InputDialog otpInputDialog = new InputDialog();
                                         String enteredOTP = otpInputDialog.showInputDialog("Enter the OTP sent to your email:");
                                         if (!enteredOTP.isEmpty() && enteredOTP.equals(generatedOTP)) {
@@ -238,14 +238,14 @@ public class SignUp extends JFrame implements ActionListener {
                                     });
                                 } else {
                                     SwingUtilities.invokeLater(() -> {
-                                        loadingDialog.dispose(); // Close the loading dialog
+                                        progressLoader.hideLoadingDialog();
                                         JOptionPane.showMessageDialog(this, "Use stable internet connection. Try again.", "Error", JOptionPane.ERROR_MESSAGE);
                                     });
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 SwingUtilities.invokeLater(() -> {
-                                    loadingDialog.dispose(); // Close the loading dialog
+                                    progressLoader.hideLoadingDialog();
                                     JOptionPane.showMessageDialog(this, "An error occurred. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
                                 });
                             }

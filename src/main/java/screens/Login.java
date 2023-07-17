@@ -86,11 +86,8 @@ public class Login extends JFrame implements ActionListener {
         add(forgetPasswordLabel);
 
         loginButton = new RoundedButton("Login");
-        loginButton.setBackground(new Color(218, 215, 205));
         loginButton.setBounds(495, 465, 110, 40);
-        loginButton.setFont(new Font("Arial", Font.BOLD, 16));
         loginButton.addActionListener(this);
-        loginButton.setFocusable(false);
         add(loginButton);
 
         JLabel label = new JLabel("New to RoomRover? ");

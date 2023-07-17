@@ -103,7 +103,7 @@ public class ForgotPassword extends JFrame implements ActionListener {
         String from = "adnaninreallife@gmail.com";
 
         ProgressLoader progressLoader = new ProgressLoader();
-        JDialog loadingDialog = progressLoader.createLoadingDialog("Please wait while the OTP is being sent.");
+        progressLoader.showLoadingDialog("Please wait while the OTP is being sent.");
 
         Thread otpThread = new Thread(() ->{
             try{
@@ -111,7 +111,7 @@ public class ForgotPassword extends JFrame implements ActionListener {
                 boolean otpStatus = emailSender.sendEmail(userEmail, from, subject, message);
                 if (otpStatus){
                     SwingUtilities.invokeLater(()->{
-                        loadingDialog.dispose(); // Close the loading dialog
+                        progressLoader.hideLoadingDialog(); // Close the progress dialog
                         InputDialog otpInputDialog = new InputDialog();
                         String enteredOTP = otpInputDialog.showInputDialog("Enter the OTP sent to your email:");
                         if (!enteredOTP.isEmpty() && enteredOTP.equals(otp)) {
@@ -122,7 +122,7 @@ public class ForgotPassword extends JFrame implements ActionListener {
                     });
                 }else{
                     SwingUtilities.invokeLater(() -> {
-                        loadingDialog.dispose();
+                        progressLoader.hideLoadingDialog();
                         showErrorMessage("Use stable internet connection. Try again.");
                     });
                 }

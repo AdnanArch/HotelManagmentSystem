@@ -2,11 +2,13 @@ package screens;
 
 import components.LoggedIn;
 import components.ProgressLoader;
+import components.RoundedButton;
 import components.RoundedTextField;
 import connection.DatabaseConnection;
 import email.EmailSender;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
@@ -40,23 +42,23 @@ public class CustomerBookings extends JFrame {
         searchField.setPreferredSize(new Dimension(200, 30));
         searchField.setFont(new Font("Arial", Font.BOLD, 15));
 
-        JButton searchButton = new JButton("Search");
-        searchButton.setPreferredSize(new Dimension(100, 30));
-        searchButton.setFont(new Font("Arial", Font.BOLD, 15));
+        RoundedButton searchButton = new RoundedButton("Search");
+        searchButton.setPreferredSize(new Dimension(100, 40));
         searchButton.addActionListener(e -> {
             String searchTerm = searchField.getText();
             searchBooking(searchTerm);
         });
 
-        JButton clearButton = new JButton("Clear");
-        clearButton.setPreferredSize(new Dimension(100, 30));
-        clearButton.setFont(new Font("Arial", Font.BOLD, 15));
+        RoundedButton clearButton = new RoundedButton("Clear");
+        clearButton.setPreferredSize(new Dimension(100, 40));
         clearButton.addActionListener(e -> clearSearch());
 
         topPanel.add(searchBookingLabel);
         topPanel.add(searchField);
         topPanel.add(searchButton);
         topPanel.add(clearButton);
+
+        topPanel.setBackground(new Color(210, 225, 242));
 
         tableModel = new DefaultTableModel();
         tableModel.addColumn("ID");
@@ -105,6 +107,8 @@ public class CustomerBookings extends JFrame {
 
         setVisible(true);
     }
+
+
 
     private void refreshTableData() {
         tableModel.fireTableDataChanged();
@@ -209,14 +213,20 @@ public class CustomerBookings extends JFrame {
                     String actionCommand = button.getActionCommand();
                     int bookingID = (int) table.getValueAt(selectedRow, 0);
                     int roomNo = (int) table.getValueAt(selectedRow, 3);
+                    String bookingStatus = (String) table.getValueAt(selectedRow, 9);
 
                     if (actionCommand.equals("Cancel")) {
-                        String bookingStatus = "Cancel Booking";
-                        try {
-                            sendCancelBookingRequestToAdminAndCustomer(roomNo, bookingStatus, bookingID);
-                        } catch (SQLException ex) {
-                            handleSQLException(ex);
+                        if(bookingStatus.equals("Is Requested") || bookingStatus.equals("Booked")){
+                            String status = "Cancel Booking";
+                            try {
+                                sendCancelBookingRequestToAdminAndCustomer(roomNo, status, bookingID);
+                            } catch (SQLException ex) {
+                                handleSQLException(ex);
+                            }
+                        }else{
+                            showErrorMessage("You can not cancel the booking request.");
                         }
+
                     } else if (actionCommand.equals("Checkout")) {
                         // Perform the checkout action here
                         performCheckout(bookingID, selectedRow);
@@ -235,7 +245,7 @@ public class CustomerBookings extends JFrame {
             String customerMessage = "Dear "+ LoggedIn.getCustomerName() + ",\nYour request to cancel the booking of room no " + roomNo + " against booking id " + bookingID + " has been sent.";
 
             ProgressLoader progressLoader = new ProgressLoader();
-            JDialog loadingDialog = progressLoader.createLoadingDialog("Please wait your request is being sent.");
+            progressLoader.showLoadingDialog("Please wait your request is being sent.");
 
             Thread cancelBookingThread = new Thread(() -> {
                 try{
@@ -244,13 +254,13 @@ public class CustomerBookings extends JFrame {
                     boolean customerEmailSentStatus = emailSender.sendEmail(toCustomer, from, subject, customerMessage);
                     if(adminEmailSentStatus && customerEmailSentStatus){
                         SwingUtilities.invokeLater(()->{
-                            loadingDialog.dispose();
+                            progressLoader.hideLoadingDialog();
                             updateRoomAndBookingStatus(bookingStatus, bookingID);
                             JOptionPane.showMessageDialog(this.getComponent(), "Cancel booking request sent successfully.");
                         });
                     }else{
                         SwingUtilities.invokeLater(()->{
-                            loadingDialog.dispose();
+                            progressLoader.hideLoadingDialog();
                             showErrorMessage("Use stable internet connection. Try again.");
                         });
                     }
@@ -284,17 +294,20 @@ public class CustomerBookings extends JFrame {
                 String roomStatus = (String) tableModel.getValueAt(selectedRow, 5);
                 String bookingStatus = (String) tableModel.getValueAt(selectedRow, 9);
                 if (bookingStatus.equals("Booked") && roomStatus.equals("Occupied")) {
-                    // Create a CallableStatement to execute the stored procedure
-                    CallableStatement statement = db.connection.prepareCall("{CALL sp_perform_checkout(?)}");
-                    statement.setInt(1, bookingID);
-                    statement.executeUpdate();
-                    statement.close();
+                    int userSelection = JOptionPane.showConfirmDialog(this.getComponent(),"Are you sure to checkout?");
+                    if(userSelection == JOptionPane.YES_OPTION){
+                        // Create a CallableStatement to execute the stored procedure
+                        CallableStatement statement = db.connection.prepareCall("{CALL sp_perform_checkout(?)}");
+                        statement.setInt(1, bookingID);
+                        statement.executeUpdate();
+                        statement.close();
 
-                    // Refresh the table data to reflect the updated booking information
-                    fetchAndDisplayCustomerBookings();
+                        // Refresh the table data to reflect the updated booking information
+                        fetchAndDisplayCustomerBookings();
 
-                    // Display a message indicating successful checkout
-                    JOptionPane.showMessageDialog(this.getComponent(), "You have checked out.", "Checkout", JOptionPane.INFORMATION_MESSAGE);
+                        // Display a message indicating successful checkout
+                        JOptionPane.showMessageDialog(this.getComponent(), "You have checked out successfully.", "Checkout", JOptionPane.INFORMATION_MESSAGE);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(this.getComponent(), "You can not check out this room.", "Checkout Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -314,6 +327,7 @@ public class CustomerBookings extends JFrame {
             return buttonText;
         }
     }
+
 }
 
 

@@ -14,9 +14,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.CallableStatement;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.sql.Date;
 
 
 public class BookNow extends JFrame implements ActionListener {
@@ -172,6 +172,11 @@ public class BookNow extends JFrame implements ActionListener {
             throw new RuntimeException(e);
         }
 
+        if (startDateUtil == null || endDateUtil == null) {
+            JOptionPane.showMessageDialog(null, "Please select both check-in and check-out dates.", "Booking Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         Date startDate = new Date(startDateUtil.getTime());
         Date endDate = new Date(endDateUtil.getTime());
 
@@ -189,7 +194,7 @@ public class BookNow extends JFrame implements ActionListener {
                 statement.registerOutParameter(1, Types.FLOAT);
                 statement.setInt(2, roomNo);
                 statement.setDate(3, startDate);
-                statement.setDate(4,  endDate);
+                statement.setDate(4, endDate);
 
                 // Execute the function call
                 statement.execute();
@@ -202,29 +207,22 @@ public class BookNow extends JFrame implements ActionListener {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            if (roomStatus.equals("Occupied")) {
-                JOptionPane.showMessageDialog(null, "Your can not book this room because it is occupied.", "Booking Error", JOptionPane.ERROR_MESSAGE);
-            } else if (roomStatus.equals("Maintenance")) {
-                JOptionPane.showMessageDialog(null, "Your can not book this room because it is under Maintenance.", "Booking Error", JOptionPane.ERROR_MESSAGE);
-
+            if (dateComparisonResult > 0) {
+                JOptionPane.showMessageDialog(null, "Your check out date is earlier than check in date.", "Booking Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                if (dateComparisonResult > 0) {
-                    JOptionPane.showMessageDialog(null, "Your check out date is earlier than check in date.", "Booking Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    int userSelection = JOptionPane.showConfirmDialog(this, "Your Total bill for booking is " + roomPrice + "\nDo you want to proceed?");
-                    if (userSelection == JOptionPane.YES_OPTION) {
-                        try {
-                            sendBookingRequestEmailToAdminAndUser(roomNo, customerID, startDate, endDate, roomPrice);
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
-
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Ok sir thanks");
+                int userSelection = JOptionPane.showConfirmDialog(this, "Your Total bill for booking is " + roomPrice + "\nDo you want to proceed?");
+                if (userSelection == JOptionPane.YES_OPTION) {
+                    try {
+                        sendBookingRequestEmailToAdminAndUser(roomNo, customerID, startDate, endDate, roomPrice);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
                     }
+
+                } else {
+                    JOptionPane.showMessageDialog(this, "Ok sir thanks");
                 }
             }
+
 
         }
     }
@@ -271,26 +269,26 @@ public class BookNow extends JFrame implements ActionListener {
 
         // open the progress loader
         ProgressLoader progressLoader = new ProgressLoader();
-        JDialog loadingDialog = progressLoader.createLoadingDialog("Please wait the booking request is being sent");
+        progressLoader.showLoadingDialog("Please wait the booking request is being sent");
 
         // start a thread
-        Thread bookingRequestThread = new Thread(() ->{
-            try{
+        Thread bookingRequestThread = new Thread(() -> {
+            try {
                 EmailSender emailSender = new EmailSender();
                 boolean adminEmailSentStatus = emailSender.sendEmail(adminTo, fromAdmin, subject, messageForAdmin);
                 boolean customerEmailSentStatus = emailSender.sendEmail(toCustomer, fromAdmin, subject, messageForCustomer);
-                if(adminEmailSentStatus && customerEmailSentStatus){
-                    SwingUtilities.invokeLater(()->{
-                        loadingDialog.dispose();
+                if (adminEmailSentStatus && customerEmailSentStatus) {
+                    SwingUtilities.invokeLater(() -> {
+                        progressLoader.hideLoadingDialog();
                         insertBookingData(roomNo, customerID, startDate, endDate, rent);
                     });
-                }else{
-                    SwingUtilities.invokeLater(()->{
-                        loadingDialog.dispose();
+                } else {
+                    SwingUtilities.invokeLater(() -> {
+                        progressLoader.hideLoadingDialog();
                         showErrorMessage("Use stable internet connection. Try again.");
                     });
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 showErrorMessage(e.getMessage());
             }
         });

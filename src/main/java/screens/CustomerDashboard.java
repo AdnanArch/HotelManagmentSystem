@@ -69,17 +69,17 @@ public class CustomerDashboard extends JFrame implements ActionListener {
 
         ImageIcon roomsIcon = new ImageIcon(ClassLoader.getSystemResource("images/room_booking.png"));
         ImageIcon bookingsIcon = new ImageIcon(ClassLoader.getSystemResource("images/checkout.png"));
-        ImageIcon revenueIcon = new ImageIcon(ClassLoader.getSystemResource("images/feedback.png"));
+        ImageIcon feedbackIcon = new ImageIcon(ClassLoader.getSystemResource("images/feedback.png"));
 
         // Scale the images to 150x150 pixels
         Image scaledRoomsImage = roomsIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
         Image scaledBookingsImage = bookingsIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
-        Image scaledRevenueImage = revenueIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        Image scaledFeedabckImage = feedbackIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
 
         // Create ImageIcon instances with the scaled images
         ImageIcon scaledRoomsIcon = new ImageIcon(scaledRoomsImage);
         ImageIcon scaledBookingsIcon = new ImageIcon(scaledBookingsImage);
-        ImageIcon scaledRevenueIcon = new ImageIcon(scaledRevenueImage);
+        ImageIcon scaledFeedbackIcon = new ImageIcon(scaledFeedabckImage);
 
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setBackground(new Color(12, 55, 64));
@@ -123,7 +123,7 @@ public class CustomerDashboard extends JFrame implements ActionListener {
         gbc.gridx = 2; // Move to the next column
         gbc.gridy = 0; // Reset to the first row
 
-        JLabel revenueLabel = new JLabel(scaledRevenueIcon);
+        JLabel revenueLabel = new JLabel(scaledFeedbackIcon);
         centerPanel.add(revenueLabel, gbc);
 
         gbc.gridx = 2; // Move to the next column
@@ -158,7 +158,7 @@ public class CustomerDashboard extends JFrame implements ActionListener {
                 throw new RuntimeException(e);
             }
         } else {
-            new Revenue();
+            new Feedback();
         }
     }
 }

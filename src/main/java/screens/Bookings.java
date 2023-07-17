@@ -335,7 +335,7 @@ public class Bookings extends JFrame {
 
 
         ProgressLoader progressLoader = new ProgressLoader();
-        JDialog loadingDialog = progressLoader.createLoadingDialog("Please wait the status is being updated.");
+        progressLoader.showLoadingDialog("Please wait the status is being updated.");
 
         String finalMessage = message;
 
@@ -344,13 +344,13 @@ public class Bookings extends JFrame {
             boolean sentStatus = emailSender.sendEmail(to, from, subject, finalMessage);
             if (sentStatus){
                 SwingUtilities.invokeLater(()->{
-                    loadingDialog.dispose();
+                    progressLoader.hideLoadingDialog();
                     updateRoomAndBookingStatus(roomNo, bookingStatus, roomStatus, bookingID);
                     JOptionPane.showMessageDialog(this, "Status updated successfully");
                 });
             }else{
                 SwingUtilities.invokeLater(()->{
-                    loadingDialog.dispose();
+                    progressLoader.hideLoadingDialog();
                     showErrorMessage("Use stable internet connection. Try again.");
                 });
             }
