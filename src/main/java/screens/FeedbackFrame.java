@@ -1,5 +1,6 @@
 package screens;
 
+import components.RoundedButton;
 import connection.DatabaseConnection;
 
 import javax.swing.*;
@@ -8,9 +9,11 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class FeedbackFrame extends JFrame {
+    private final boolean isCustomerLoggedIn; // Flag to indicate whether a customer has logged in
 
-    public FeedbackFrame() {
+    public FeedbackFrame(boolean isCustomerLoggedIn) {
         super("User Feedbacks");
+        this.isCustomerLoggedIn = isCustomerLoggedIn; // Set the flag
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 800);
         setLocationRelativeTo(null);
@@ -47,14 +50,49 @@ public class FeedbackFrame extends JFrame {
         // Set the header panel with the heading
         JPanel header = new JPanel();
         header.setBackground(headerColor);
-        JLabel headingLabel = new JLabel("Customer Feedbacks");
+        JLabel headingLabel = new JLabel("Customer's Feedbacks");
         headingLabel.setFont(new Font("sans-serif", Font.BOLD, 30));
         headingLabel.setForeground(Color.WHITE);
         header.add(headingLabel);
         add(header, BorderLayout.NORTH);
 
+        // If a customer has logged in, add the "Give Feedback" panel
+        if (isCustomerLoggedIn) {
+            JPanel giveFeedbackPanel = createGiveFeedbackPanel();
+            add(giveFeedbackPanel, BorderLayout.SOUTH);
+        }
+
         // Display the frame
         setVisible(true);
+    }
+
+    // Method to create the panel containing the label and "Give Feedback" button
+    private JPanel createGiveFeedbackPanel() {
+        JPanel giveFeedbackPanel = new JPanel();
+        giveFeedbackPanel.setBackground(Color.WHITE);
+
+        JLabel promptLabel = new JLabel("Do you want to give Feedback?");
+        promptLabel.setFont(new Font("sans-serif", Font.PLAIN, 18));
+        giveFeedbackPanel.add(promptLabel);
+
+        RoundedButton giveFeedbackButton = new RoundedButton("Give Feedback");
+        giveFeedbackButton.setPreferredSize(new Dimension(200, 40));
+        giveFeedbackButton.addActionListener(e -> {
+            // Open the feedback submission window
+            openFeedbackSubmission();
+        });
+        giveFeedbackPanel.add(giveFeedbackButton);
+
+        // Set the layout to center the components
+        giveFeedbackPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+
+        return giveFeedbackPanel;
+    }
+
+    // Method to open the feedback submission window
+    private void openFeedbackSubmission() {
+        FeedbackSubmissionFrame submissionFrame = new FeedbackSubmissionFrame();
+        submissionFrame.setVisible(true);
     }
 
     // Method to fetch feedback data from the database using the stored procedure
@@ -66,19 +104,19 @@ public class FeedbackFrame extends JFrame {
             DatabaseConnection db = new DatabaseConnection();
             CallableStatement statement = db.connection.prepareCall("{CALL sp_get_feedback_data()}");
 
-                // Execute the stored procedure
-                ResultSet resultSet = statement.executeQuery();
+            // Execute the stored procedure
+            ResultSet resultSet = statement.executeQuery();
 
-                // Process the result set and create FeedbackData objects
-                while (resultSet.next()) {
-                    String customerName = resultSet.getString("Name");
-                    int bookingId = resultSet.getInt("booking_id");
-                    String date = resultSet.getString("feedback_date");
-                    int stars = resultSet.getInt("stars");
-                    String comments = resultSet.getString("review");
+            // Process the result set and create FeedbackData objects
+            while (resultSet.next()) {
+                String customerName = resultSet.getString("Name");
+                int bookingId = resultSet.getInt("booking_id");
+                String date = resultSet.getString("feedback_date");
+                int stars = resultSet.getInt("stars");
+                String comments = resultSet.getString("review");
 
-                    feedbackDataList.add(new FeedbackData(bookingId, customerName, stars, date, comments));
-                }
+                feedbackDataList.add(new FeedbackData(bookingId, customerName, stars, date, comments));
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -131,6 +169,7 @@ public class FeedbackFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(FeedbackFrame::new);
+        // Assume a customer has logged in for demonstration purposes
+        SwingUtilities.invokeLater(() -> new FeedbackFrame(true));
     }
 }

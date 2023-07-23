@@ -7,12 +7,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 
-public class Feedback extends JFrame {
+public class FeedbackSubmissionFrame extends JFrame {
     private final JComboBox<Integer> starsComboBox;
     private final JTextArea reviewTextArea;
     private final JTextField bookingTextField;
 
-    Feedback() {
+    FeedbackSubmissionFrame() {
         setTitle("Feedback");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(500, 470);
@@ -195,6 +195,6 @@ public class Feedback extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(Feedback::new);
+        SwingUtilities.invokeLater(FeedbackSubmissionFrame::new);
     }
 }
