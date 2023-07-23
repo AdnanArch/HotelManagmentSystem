@@ -149,7 +149,7 @@ public class SignUp extends JFrame implements ActionListener {
 
         JLabel signInLabel = new JLabel("<html><i>Login</i></html>");
         signInLabel.setFont(new Font("Arial", Font.PLAIN, 18));
-        signInLabel.setBounds(650, 680, 110, 40);
+        signInLabel.setBounds(630, 680, 110, 40);
         signInLabel.setForeground(new Color(218, 215, 205));
         add(signInLabel);
 
@@ -166,9 +166,8 @@ public class SignUp extends JFrame implements ActionListener {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                Login login = new Login();
                 dispose();
-                login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                new Login();
             }
         });
         add(signInLabel);

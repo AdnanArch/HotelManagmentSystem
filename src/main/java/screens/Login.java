@@ -98,7 +98,7 @@ public class Login extends JFrame implements ActionListener {
 
         JLabel signUpLabel = new JLabel("<html><i>Sign Up</i></html>");
         signUpLabel.setFont(new Font("Arial", Font.PLAIN, 18));
-        signUpLabel.setBounds(610, 550, 110, 40);
+        signUpLabel.setBounds(590, 550, 110, 40);
         signUpLabel.setForeground(new Color(218, 215, 205));
         add(signUpLabel);
 
@@ -115,9 +115,8 @@ public class Login extends JFrame implements ActionListener {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                SignUp signUp = new SignUp();
                 dispose();
-                signUp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                new SignUp();
             }
         });
         add(signUpLabel);

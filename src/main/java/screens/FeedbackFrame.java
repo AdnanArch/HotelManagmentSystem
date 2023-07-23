@@ -9,12 +9,11 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class FeedbackFrame extends JFrame {
-    private final boolean isCustomerLoggedIn; // Flag to indicate whether a customer has logged in
 
     public FeedbackFrame(boolean isCustomerLoggedIn) {
         super("User Feedbacks");
-        this.isCustomerLoggedIn = isCustomerLoggedIn; // Set the flag
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Flag to indicate whether a customer has logged in
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(1000, 800);
         setLocationRelativeTo(null);
 
@@ -166,10 +165,5 @@ public class FeedbackFrame extends JFrame {
 
     // Custom class to hold feedback data
     private record FeedbackData(int bookingId, String customerName, int stars, String date, String comments) {
-    }
-
-    public static void main(String[] args) {
-        // Assume a customer has logged in for demonstration purposes
-        SwingUtilities.invokeLater(() -> new FeedbackFrame(true));
     }
 }

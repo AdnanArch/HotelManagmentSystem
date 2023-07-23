@@ -193,8 +193,4 @@ public class FeedbackSubmissionFrame extends JFrame {
             ex.printStackTrace();
         }
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(FeedbackSubmissionFrame::new);
-    }
 }
