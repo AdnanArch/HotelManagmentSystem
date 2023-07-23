@@ -223,6 +223,9 @@ public class Revenue extends JFrame implements ActionListener {
                 statement.registerOutParameter(4, Types.BOOLEAN);
                 // Execute the stored procedure
                 statement.execute();
+
+                double totalRevenue = 0.0;
+
                 boolean dataExists = statement.getBoolean(4);
 
                 if (dataExists) {
@@ -241,8 +244,12 @@ public class Revenue extends JFrame implements ActionListener {
 
                         // Add the row data to the table model
                         tableModel.addRow(new Object[]{bookingID, roomNo, checkInDate, checkOutDate, revenue});
+
+                        totalRevenue += revenue;
                     }
                     resultSet.close();
+
+                    tableModel.addRow(new Object[]{"Total Revenue", "", "", "", totalRevenue});
 
                 } else {
                     JOptionPane.showMessageDialog(null, "No data found");
@@ -349,6 +356,9 @@ public class Revenue extends JFrame implements ActionListener {
                 statement.registerOutParameter(2, Types.BOOLEAN);
                 // Execute the stored procedure
                 statement.execute();
+
+                double totalRevenue = 0.0;
+
                 boolean dataExists = statement.getBoolean(2);
 
                 if (dataExists) {
@@ -367,8 +377,12 @@ public class Revenue extends JFrame implements ActionListener {
 
                         // Add the row data to the table model
                         tableModel.addRow(new Object[]{bookingID, roomNo, checkInDate, checkOutDate, revenue});
+
+                        totalRevenue += revenue;
                     }
                     resultSet.close();
+
+                    tableModel.addRow(new Object[]{"Total Revenue", "", "", "", totalRevenue});
 
                 } else {
                     JOptionPane.showMessageDialog(null, "No data found");
@@ -457,6 +471,9 @@ public class Revenue extends JFrame implements ActionListener {
             statement.registerOutParameter(1, Types.BOOLEAN);
             // Execute the stored procedure
             statement.execute();
+
+            double totalRevenue = 0.0;
+
             boolean dataExists = statement.getBoolean(1);
 
             if (dataExists) {
@@ -475,8 +492,12 @@ public class Revenue extends JFrame implements ActionListener {
 
                     // Add the row data to the table model
                     tableModel.addRow(new Object[]{bookingID, roomNo, checkInDate, checkOutDate, revenue});
+
+                    totalRevenue += revenue;
                 }
                 resultSet.close();
+
+                tableModel.addRow(new Object[]{"Total Revenue", "", "", "", totalRevenue});
 
             } else {
                 JOptionPane.showMessageDialog(null, "No data found");
@@ -564,6 +585,9 @@ public class Revenue extends JFrame implements ActionListener {
             statement.registerOutParameter(1, Types.BOOLEAN);
             // Execute the stored procedure
             statement.execute();
+
+            double totalRevenue = 0.0;  // Variable to store the total revenue
+
             boolean dataExists = statement.getBoolean(1);
 
             if (dataExists) {
@@ -582,8 +606,15 @@ public class Revenue extends JFrame implements ActionListener {
 
                     // Add the row data to the table model
                     tableModel.addRow(new Object[]{bookingID, roomNo, checkInDate, checkOutDate, revenue});
+
+                    // Update the total revenue
+                    totalRevenue += revenue;
                 }
                 resultSet.close();
+
+                // Add a row with the total revenue to the table model
+                tableModel.addRow(new Object[]{"Total Revenue", "", "", "", totalRevenue});
+
 
             } else {
                 JOptionPane.showMessageDialog(null, "No data found");
@@ -670,6 +701,13 @@ public class Revenue extends JFrame implements ActionListener {
                 if (userSelection == JFileChooser.APPROVE_OPTION) {
                     // Get the selected file
                     File fileToSave = fileChooser.getSelectedFile();
+
+                    // Check if the file has ".pdf" extension, if not, append it to the file name
+                    String filePath = fileToSave.getAbsolutePath();
+                    if (!filePath.toLowerCase().endsWith(".pdf")) {
+                        filePath += ".pdf";
+                        fileToSave = new File(filePath);
+                    }
 
                     // Save the document to the selected file
                     document.save(fileToSave);
