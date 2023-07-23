@@ -143,10 +143,6 @@ public class CustomerDashboard extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(CustomerDashboard::new);
-    }
-
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if (actionEvent.getSource() == bookingButton) {
@@ -158,7 +154,7 @@ public class CustomerDashboard extends JFrame implements ActionListener {
                 throw new RuntimeException(e);
             }
         } else {
-            new Feedback();
+            new FeedbackFrame(true);
         }
     }
 }
