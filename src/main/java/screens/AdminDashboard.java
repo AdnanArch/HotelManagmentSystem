@@ -162,10 +162,6 @@ public class AdminDashboard extends JFrame implements ActionListener {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(AdminDashboard::new);
-    }
-
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if (actionEvent.getSource() == roomButton) {
@@ -175,7 +171,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
         } else if(actionEvent.getSource() == revenueButton){
             new Revenue();
         }else{
-            new Feedback();
+            new FeedbackFrame(false);
         }
     }
 }
