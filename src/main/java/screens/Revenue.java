@@ -99,7 +99,6 @@ public class Revenue extends JFrame implements ActionListener {
             CardLayout layout = (CardLayout) rightPanel.getLayout();
             layout.show(rightPanel, "Total Revenue Report");
         });
-//
         setVisible(true);
     }
 
