@@ -7,6 +7,8 @@
     <file url="file://$PROJECT_DIR$/src/main/java/screens/BookRoom.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/Bookings.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/CustomerBookings.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/screens/Feedback.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/screens/FeedbackFrame.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/ForgotPassword.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/Login.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/Revenue.java" dialect="GenericSQL" />
