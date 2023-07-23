@@ -28,26 +28,26 @@ public class ForgotPassword extends JFrame implements ActionListener {
         super("Forgot Password");
 
         JLabel titleLabel = new JLabel("Forgot Password");
-        titleLabel.setBounds(145, 30, 400, 100);
+        titleLabel.setBounds(155, 30, 400, 100);
         titleLabel.setForeground(Color.WHITE.brighter());
         titleLabel.setFont(new Font("Sans-serif", Font.BOLD, 35));
         add(titleLabel);
 
         JLabel emailLabel = new JLabel("Email:");
-        emailLabel.setBounds(170, 150, 130, 30);
+        emailLabel.setBounds(160, 150, 130, 25);
         emailLabel.setFont(new Font("Sans-serif", Font.BOLD, 18));
         emailLabel.setForeground(Color.WHITE.brighter());
         add(emailLabel);
 
         emailTextField = new RoundedTextField();
-        emailTextField.setBounds(170, 180, 280, 45);
+        emailTextField.setBounds(160, 180, 280, 35);
         emailTextField.setForeground(Color.BLACK);
         emailTextField.setFont(new Font("Sans-serif", Font.PLAIN, 17));
         add(emailTextField);
 
         resetButton = new RoundedButton("Reset");
         resetButton.setBackground(new Color(218, 215, 205));
-        resetButton.setBounds(350, 235, 100, 40);
+        resetButton.setBounds(340, 230, 100, 35);
         resetButton.setFont(new Font("Sans-serif", Font.BOLD, 16));
         resetButton.addActionListener(this);
         resetButton.setFocusable(false);
@@ -55,7 +55,7 @@ public class ForgotPassword extends JFrame implements ActionListener {
 
         RoundedButton loginButton = new RoundedButton("Login");
         loginButton.setBackground(new Color(218, 215, 205));
-        loginButton.setBounds(25, 310, 100, 40);
+        loginButton.setBounds(25, 310, 100, 35);
         loginButton.setFont(new Font("Sans-serif", Font.BOLD, 16));
         loginButton.addActionListener(actionEvent -> {
             new Login();
@@ -176,7 +176,4 @@ public class ForgotPassword extends JFrame implements ActionListener {
         JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    public static void main(String[] args) {
-        new ForgotPassword();
-    }
 }
