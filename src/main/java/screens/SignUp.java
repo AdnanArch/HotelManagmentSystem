@@ -183,10 +183,6 @@ public class SignUp extends JFrame implements ActionListener {
         setResizable(false);
     }
 
-    public static void main(String[] args) {
-        new SignUp();
-    }
-
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if (actionEvent.getSource() == signUpButton) {

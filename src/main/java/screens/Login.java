@@ -139,10 +139,6 @@ public class Login extends JFrame implements ActionListener {
         setResizable(false);
     }
 
-    public static void main(String[] args) {
-        new Login();
-    }
-
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
 

@@ -125,11 +125,6 @@ public class AddNewRoom extends JFrame implements ActionListener {
 
         setVisible(true);
     }
-
-    public static void main(String[] args) {
-        new AddNewRoom();
-    }
-
     public void setUpdateButtonVisibility() {
         addButton.setVisible(false);
     }

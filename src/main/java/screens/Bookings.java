@@ -102,10 +102,6 @@ public class Bookings extends JFrame {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        new Bookings();
-    }
-
     private void refreshTableData() {
         tableModel.fireTableDataChanged();
     }
