@@ -236,10 +236,11 @@ public class CustomerBookings extends JFrame {
         }
 
         private void sendCancelBookingRequestToAdminAndCustomer(int roomNo, String bookingStatus, int bookingID) throws SQLException {
-            String from = "adnaninreallife@gmail.com";
-            String toAdmin = "adnaninreallife@gmail.com";
+            // TODO: Write here your own admin email address
+            String from = "your_admin_email";
+            String toAdmin = "your_admin_email";
             String subject = "Booking Request";
-            String adminMessage = LoggedIn.getCustomerName() + " having customer ID " + LoggedIn.getCustomerID() + " has sent a request to cancel the booking of room No " + roomNo + " against Booking Id " + bookingID;
+            String adminMessage = LoggedIn.getCustomerName() + " having customer ID " + LoggedIn.getCustomerID() + " has sent a request to cancel the booking of room No " + roomNo + " against Booking Id " + bookingID+ ".";
 
             String toCustomer = LoggedIn.getCustomerEmail();
             String customerMessage = "Dear "+ LoggedIn.getCustomerName() + ",\nYour request to cancel the booking of room no " + roomNo + " against booking id " + bookingID + " has been sent.";

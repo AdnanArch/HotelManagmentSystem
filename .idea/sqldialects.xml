@@ -3,15 +3,18 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/hotel_app.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/components/LoggedIn.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/screens/AddNewRoom.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/BookNow.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/BookRoom.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/Bookings.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/CustomerBookings.java" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/src/main/java/screens/Feedback.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/FeedbackFrame.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/screens/FeedbackSubmissionFrame.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/screens/FetchRoomDetails.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/ForgotPassword.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/Login.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/Revenue.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/screens/Rooms.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/main/java/screens/SignUp.java" dialect="GenericSQL" />
   </component>
 </project>

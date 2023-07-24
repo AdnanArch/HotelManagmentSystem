@@ -261,7 +261,7 @@ public class SignUp extends JFrame implements ActionListener {
 
     private boolean sendOTP(String email, String otp) {
         EmailSender emailSender = new EmailSender();
-        String from = "adnaninreallife@gmail.com"; // Replace with your Gmail email address
+        String from = "your_email_address@gmail.com"; // Replace with your Gmail email address
         String subject = "OTP for Sign Up";
         String text = "Your OTP is: " + otp;
         return emailSender.sendEmail(email, from, subject, text);

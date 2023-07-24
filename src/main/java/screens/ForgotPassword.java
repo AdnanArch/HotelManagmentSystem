@@ -100,7 +100,9 @@ public class ForgotPassword extends JFrame implements ActionListener {
         String otp = otpGenerator.generateOTP();
         String subject = "Password Reset OTP";
         String message = "Your OTP for password reset is: " + otp;
-        String from = "adnaninreallife@gmail.com";
+
+        // TODO: Set your own admin email from which you want to send email.
+        String from = "your_admin_email@gmail.com";
 
         ProgressLoader progressLoader = new ProgressLoader();
         progressLoader.showLoadingDialog("Please wait while the OTP is being sent.");

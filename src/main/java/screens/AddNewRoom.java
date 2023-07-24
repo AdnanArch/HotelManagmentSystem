@@ -180,33 +180,19 @@ public class AddNewRoom extends JFrame implements ActionListener {
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid Information");
             }
-            // new line added
-            // closing old instance first then opening new instance
-            /*Rooms testRoom = Rooms.getInstance();
-            testRoom.dispose();
-            Rooms.disposeObj();
-            // regular code
-            testRoom = Rooms.getInstance();*/
             FetchRoomDetails testRoom = new FetchRoomDetails();
             testRoom.setTableModel(Rooms.tableModel);
 
             testRoom.fetchAndDisplayRoomDetails();
-//            testRoom.setVisible(true);
             this.dispose();
         } else if (actionEvent.getSource() == updateButton) {
-//            System.out.println(roomNo);
             boolean isUpdated = updateRoom(roomNo, roomType, roomCapacity, roomRent, roomStatus, roomDescription);
             if (isUpdated) {
-
                 JOptionPane.showMessageDialog(null, "Room Updated Successfully.");
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Could not update room.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-//            Rooms room = Rooms.getInstance();
-//            room.fetchAndDisplayRoomDetails();
-//            room.setVisible(true);
             FetchRoomDetails room = new FetchRoomDetails();
             room.setTableModel(Rooms.tableModel);
             room.fetchAndDisplayRoomDetails();

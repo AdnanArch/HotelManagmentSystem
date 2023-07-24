@@ -7,7 +7,7 @@ public class Validator {
     private static final String USERNAME_PATTERN = "^[a-zA-Z][a-zA-Z0-9]*$";
     private static final String EMAIL_PATTERN = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-]+)(\\.[a-zA-Z]{2,5}){1,2}$";
     private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?!.*--).{8,}$";
-    private static final String ADDRESS_PATTERN = "^[a-zA-Z0-9#]+$";
+    private static final String ADDRESS_PATTERN = "^[a-zA-Z0-9#\\s]+$";
     private static final String PHONE_PATTERN = "^\\d{11}$";
 
     public String validateCustomerData(String firstName, String lastName, String userName, String email, String password, String address, String phone, String emergencyContact) {

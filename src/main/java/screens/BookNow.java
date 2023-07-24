@@ -259,12 +259,14 @@ public class BookNow extends JFrame implements ActionListener {
     private void sendBookingRequestEmailToAdminAndUser(int roomNo, int customerID, Date startDate, Date endDate, double rent) throws SQLException {
         // set the email contents to send notification to admin
         String subject = "Room Booking Request";
-        String messageForAdmin = "The customer with Name " + LoggedIn.getCustomerName() + " and having customer ID " + LoggedIn.getCustomerID() + " has requested for the booking of room no " + roomNo;
-        String fromAdmin = "adnaninreallife@gmail.com";
-        String adminTo = "adnaninreallife@gmail.com";
+        String messageForAdmin = "The customer with Name " + LoggedIn.getCustomerName() + " and having customer ID " + LoggedIn.getCustomerID() + " has requested for the booking of room no " + roomNo + ".";
+
+        // TODO: set your own admin email from which you want to send email.
+        String fromAdmin = "your_admin_emai@gmail.com";
+        String adminTo = "your_admin_emai@gmail.com";
 
         // set the email contents to send notification to customer
-        String messageForCustomer = "You have have requested for the booking of room no " + roomNo;
+        String messageForCustomer = "You have requested for the booking of room no " + roomNo + ".";
         String toCustomer = LoggedIn.getCustomerEmail();
 
         // open the progress loader

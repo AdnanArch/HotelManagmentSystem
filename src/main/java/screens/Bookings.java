@@ -315,7 +315,8 @@ public class Bookings extends JFrame {
 
     private void sendEmailToCustomerAndUpdateRoomAndBookingStatus(String checkBookingStatus, int roomNo, String bookingStatus, String roomStatus, int bookingID){
         String subject = "Booking Request Status";
-        String from = "adnaninreallife@gmail.com";
+        // TODO: Set your own admin email from which you want to send email
+        String from = "your_admin_email@gmail.com";
         String to = getCustomerEmailByBookingID(bookingID);
         String message;
 
